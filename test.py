@@ -37,21 +37,21 @@ def test(network, num_test_batches, test_batch_size):
                         num_times_signal_appears_in_dataset +=1
 
                         if target[i] != pred[i]: # if the value was signal but it was missed
-                            num_times_signal_was_missed += 1
+                            num_times_signal_was_missed += 1 #false negative
                     else: #other number is presented to the network
                         if pred[i] == signal: #nn thinks it is a signal
-                            num_times_signal_was_contaminated += 1
+                            num_times_signal_was_contaminated += 1 #false positive
 
             else:
                 print("last Test batch {}".format(batch))
-                print("The neural network got {} out of {} correct in this batch, {}% correct".format(correct, total, correct / test_batch_size * 100))
+                print("The neural network got {} out of {} correct in this batch, {}% correct".format(correct, total, correct / test_batch_size * 10))
                 print("Testing loss: {}".format(test_losses))
-                print("The signal was contaminated {} times and the signal was missed {} times".format(num_times_signal_was_contaminated,num_times_signal_was_missed))
+                print("The signal was contaminated {} times and the signal was missed {} times out of {}".format(num_times_signal_was_contaminated,num_times_signal_was_missed,total))
 
                 return (correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset)
         print("all batches used")
         print("last Test batch {}".format(batch))
-        print("The neural network got {} out of {} correct in this batch, {}% correct".format(correct, total, correct / test_batch_size * 100))
+        print("The neural network got {} out of {} correct in this batch, {}% correct".format(correct, total, correct / test_batch_size * 10))
         print("Testing loss: {}".format(test_losses))
         print("The signal was contaminated {} times and the signal was missed {} times".format(num_times_signal_was_contaminated,num_times_signal_was_missed))
 
