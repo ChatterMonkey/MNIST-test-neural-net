@@ -19,4 +19,4 @@ test_loader = torch.utils.data.DataLoader(
                                torchvision.transforms.Normalize(
                                  (0.1307,), (0.3081,))
                              ])),
-  batch_size=test_batch_size, shuffle=True)
+  batch_size=test_batch_size, shuffle=False)
