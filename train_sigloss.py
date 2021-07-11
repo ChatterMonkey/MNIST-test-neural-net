@@ -1,8 +1,13 @@
 import torch
+from torch.nn import functional as F
 
 
+from loaders import train_loader
+from variables import *
+from loss_functions import significance_loss
 
-def train(network,  num_train_batches, train_batch_size, epoch):
+
+def train(network, optimizer, num_train_batches, train_batch_size, epoch):
 
     network.train()
     train_losses = []
@@ -24,9 +29,27 @@ def train(network,  num_train_batches, train_batch_size, epoch):
                 training_weight_list.append(1)
 
         training_weight = torch.tensor(training_weight_list).float()
+        loss_target = torch.tensor()
+        for i in range(len(target)):
+            if target[i] == signal:
+                loss_target.add(1)
+            else:
+                loss_target.add(0)
 
-        loss = F.nll_loss(output, target,weight=training_weight)
+        loss_pred = torch.tensor()
+        for i in range(len(output)):
+            if output[i].argmax().item ==signal:
+                loss_pred.add(1)
+            else:
+                loss_pred.add(0)
+
+
+
+
+        #loss = F.nll_loss(output, target,weight=training_weight)
         #loss = F.nll_loss(output, target)
+        loss_function = significance_loss(train_batch_size/10,9*train_batch_size/10)
+        loss = loss_function(loss_target,loss_pred)
         loss.backward()
         optimizer.step()
 

@@ -104,4 +104,3 @@ def test(network, num_test_batches, test_batch_size,cutoff,calculate_deviations)
         print("The signal was contaminated {} times and the signal was missed {} times".format(num_times_signal_was_contaminated,num_times_signal_was_missed))
 
         return (hits,correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations)
-
