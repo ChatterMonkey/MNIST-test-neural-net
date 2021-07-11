@@ -20,3 +20,4 @@ test_loader = torch.utils.data.DataLoader(
                                  (0.1307,), (0.3081,))
                              ])),
   batch_size=test_batch_size, shuffle=False)
+#do you see this?
