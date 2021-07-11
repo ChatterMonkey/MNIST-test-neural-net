@@ -3,14 +3,14 @@ import torch.nn.functional
 from loaders import test_loader
 from variables import signal
 
-def test(network, num_test_batches, test_batch_size,cutoff): #set cutoff to 0 for no cutoff
+def test(network, num_test_batches, test_batch_size,cutoff,calculate_deviations): #set cutoff to 0 for no cutoff
     print("testing...")
     network.eval()   #turn off drop off layers etc. for testing
     test_loss = 0
     correct = 0
     total = 0
     test_losses =[]
-    set_of_deviations = []
+    deviations = []
 
     num_times_signal_appears_in_dataset = 0
     num_times_signal_was_missed = 0
@@ -32,6 +32,8 @@ def test(network, num_test_batches, test_batch_size,cutoff): #set cutoff to 0 fo
                 #print(torch.sigmoid(output[1]))
                 #print(output[1].max())
                 #print(target[1])
+
+
 
 
                 if cutoff != -1:
@@ -62,6 +64,14 @@ def test(network, num_test_batches, test_batch_size,cutoff): #set cutoff to 0 fo
                 correct += pred.eq(target.data.view_as(pred)).sum() # .eq compares pred and target and gives true for a match
                 total += 1
 
+
+                if calculate_deviations:
+                    for i in range(len(output)):
+                        soft_output = torch.nn.Softmax(dim=0)(output[i])
+
+                        deviations.append(soft_output[pred[i]])
+
+
                                                                     # and false for a miss. .sum() adds num of True, view_as is for the dimentional match
 
                 for i in range(len(target)):
@@ -86,12 +96,12 @@ def test(network, num_test_batches, test_batch_size,cutoff): #set cutoff to 0 fo
                 print("Testing loss: {}".format(test_losses))
                 print("The signal was contaminated {} times and the signal was missed {} times out of {}".format(num_times_signal_was_contaminated,num_times_signal_was_missed,total))
 
-                return (hits,correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count)
+                return (hits,correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations)
         print("all batches used")
         print("last Test batch {}".format(batch))
         print("The neural network got {} out of {} correct in this batch, {}% correct".format(correct, total, correct / test_batch_size * 10))
         print("Testing loss: {}".format(test_losses))
         print("The signal was contaminated {} times and the signal was missed {} times".format(num_times_signal_was_contaminated,num_times_signal_was_missed))
 
-        return (hits,correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count)
+        return (hits,correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations)
 
