@@ -7,7 +7,7 @@ from variables import *
 from loss_functions import significance_loss
 
 
-def train(network, optimizer, num_train_batches, train_batch_size, epoch):
+def train_sigloss(network, optimizer, num_train_batches, train_batch_size, epoch):
 
     network.train()
     train_losses = []
@@ -29,19 +29,17 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
                 training_weight_list.append(1)
 
         training_weight = torch.tensor(training_weight_list).float()
-        loss_target = torch.tensor()
+        loss_target = torch.zeros(len(target))
         for i in range(len(target)):
             if target[i] == signal:
-                loss_target.add(1)
-            else:
-                loss_target.add(0)
+                loss_target[i] =1
 
-        loss_pred = torch.tensor()
+
+        loss_pred = torch.zeros(len(output))
         for i in range(len(output)):
             if output[i].argmax().item ==signal:
-                loss_pred.add(1)
-            else:
-                loss_pred.add(0) #c
+                loss_pred[i] = 1
+
 
 
 
@@ -50,6 +48,7 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
         #loss = F.nll_loss(output, target)
         loss_function = significance_loss(train_batch_size/10,9*train_batch_size/10)
         loss = loss_function(loss_target,loss_pred)
+        print(loss)
         loss.backward()
         optimizer.step()
 

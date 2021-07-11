@@ -5,6 +5,7 @@ from net import Net
 from test import test
 from train import train
 from variables import *
+from train_sigloss import train_sigloss
 
 torch.backends.cudnn.enabled = False
 
@@ -20,7 +21,7 @@ for epoch in range(1, n_epochs + 1):
     print("Epoch number {}".format(epoch))
 
 
-    train_losses = train(network,optimizer,num_train_batches,train_batch_size,epoch)
+    train_losses = train_sigloss(network,optimizer,num_train_batches,train_batch_size,epoch)
 
 
     print("TRAINING LOSSES {}".format(train_losses))
