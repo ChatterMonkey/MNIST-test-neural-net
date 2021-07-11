@@ -41,7 +41,7 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
             if output[i].argmax().item ==signal:
                 loss_pred.add(1)
             else:
-                loss_pred.add(0)
+                loss_pred.add(0) #c
 
 
 
