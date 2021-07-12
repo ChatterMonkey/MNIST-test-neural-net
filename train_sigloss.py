@@ -33,12 +33,19 @@ def train_sigloss(network, optimizer, num_train_batches, train_batch_size, epoch
         for i in range(len(target)):
             if target[i] == signal:
                 loss_target[i] =1
-
+        print(signal)
 
         loss_pred = torch.zeros(len(output))
         for i in range(len(output)):
-            if output[i].argmax().item ==signal:
+            #print(target[i])
+
+            if output[i].argmax().item() == signal:
+                #print("matched")
+
                 loss_pred[i] = 1
+
+        loss_pred.requires_grad_(True)
+        loss_target.requires_grad_(True)
 
 
 
@@ -47,8 +54,10 @@ def train_sigloss(network, optimizer, num_train_batches, train_batch_size, epoch
         #loss = F.nll_loss(output, target,weight=training_weight)
         #loss = F.nll_loss(output, target)
         loss_function = significance_loss(train_batch_size/10,9*train_batch_size/10)
+        #print(loss_pred)
+        #print(loss_target)
         loss = loss_function(loss_target,loss_pred)
-        print(loss)
+        print("loss {}".format(loss))
         loss.backward()
         optimizer.step()
 

@@ -31,6 +31,7 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
 
         loss = F.nll_loss(output, target,weight=training_weight)
         #loss = F.nll_loss(output, target)
+        print("loss r{}".format(loss))
         loss.backward()
         optimizer.step()
 
