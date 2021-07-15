@@ -12,8 +12,9 @@ def significance_loss(expectedSignal,expectedBackground):
         s = signalWeight*torch.sum(y_pred*y_true)
         b = backgroundWeight*torch.sum(y_pred*(1-y_true))
 
-        return -(s*s)/(s+b + 0.000000001)
+        return (s+b )/(s*s+ 0.000000001)
     return sigloss
+
 
 
 sig_loss = significance_loss(1,10)
