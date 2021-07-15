@@ -26,7 +26,7 @@ def train_sigloss(network, optimizer): #train with the significance loss
         loss_for_each_batch.append(loss.item())
         loss.backward()
         optimizer.step()
-    print("foot print is {}".format(network(torch.ones(1,28,28))))
+    #print("foot print is {}".format(network(torch.ones(1,28,28))))
 
     return loss_for_each_batch
 

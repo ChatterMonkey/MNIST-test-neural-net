@@ -6,6 +6,7 @@ from test import test
 from train import train
 from variables import *
 from train_sigloss import train_sigloss
+from loaders import test_loader
 
 torch.backends.cudnn.enabled = False
 
@@ -24,22 +25,35 @@ def train_and_test():
     network = Net()
     optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
     #network,optimizer = initilize()
-    loss_list = []
+    test_loss_list = []
+    train_loss_list = []
 
     for epoch in range(1, n_epochs + 1):
 
         print("Epoch number {}".format(epoch))
         train_losses = train_sigloss(network,optimizer)
+        for i in range(len(train_losses)):
+            train_loss_list.append(train_losses[i])
 
         print("Training Complete, losses {}".format(train_losses))
         test_losses,total_number_correct,true_positive_count,false_positive_count,sample_output = test(network,-1)
         for i in range(len(test_losses)):
-            loss_list.append(test_losses[i])
+            test_loss_list.append(test_losses[i])
+
+        examples = enumerate(test_loader)
+        batch_idx, (example_data, example_targets) = next(examples)
+
+        print(network(example_data))
+
+
+
         print("Testing Complete")
         print("loss: {} percent accuracy: {}, true positives {}, false positives {}".format(test_losses,total_number_correct/10000,true_positive_count,false_positive_count))
         torch.save(network.state_dict(), '/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/model.pth')
-    plt.plot(loss_list)
-    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/loss.png")
+    #plt.plot(train_loss_list)
+    #plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001train.png")
+    plt.plot(test_loss_list)
+    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001test_alone.png")
 
 train_and_test()
 ave_deviations = []
