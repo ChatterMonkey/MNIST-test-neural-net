@@ -1,7 +1,7 @@
 import torch
 from loaders import train_loader
 from variables import *
-from loss_functions import significance_loss
+from functions import significance_loss
 
 
 
@@ -15,20 +15,8 @@ def train_sigloss(network, optimizer): #train with the significance loss
         optimizer.zero_grad()
 
         output = network(data)
-        target_list = torch.zeros(len(target)) # list with 1 for signal and 0 for background
-        prediction_list = torch.zeros(len(output)) #list of predictions with 1 for signal and 0 for background
 
-        for i in range(len(target)): #setup the target list
-            if target[i] == signal:
-                target_list[i] = 1
-        for i in range(len(output)): #setup the prediction list
-            if output[i].argmax().item() == signal:
-                prediction_list[i] = 1
-
-        target_list.requires_grad_(True)
-        prediction_list.requires_grad_(True) #nessecary to compute derivatives for backpropagation
-
-        loss = loss_function(target_list,prediction_list)
+        loss = significance_loss(target,output,train_batch_size)
 
         if batch % log_interval == 0:
             print("Training batch {}/{}, loss was {}".format(batch,60000/train_batch_size,loss))

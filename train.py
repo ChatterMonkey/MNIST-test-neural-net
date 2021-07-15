@@ -1,7 +1,4 @@
 import torch
-from torch.nn import functional as F
-
-
 from loaders import train_loader
 from variables import *
 
@@ -29,7 +26,7 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
 
         training_weight = torch.tensor(training_weight_list).float()
 
-        loss = F.nll_loss(output, target,weight=training_weight)
+        loss = torch.functional.nll_loss(output, target,weight=training_weight)
         #loss = F.nll_loss(output, target)
         print("loss r{}".format(loss))
 

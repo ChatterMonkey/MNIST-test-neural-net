@@ -20,18 +20,19 @@ def initilize():
 
 
 def train_and_test():
-    network,optimizer = initilize()
+    torch.manual_seed(random_seed)
+    network = Net()
+    optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
+    #network,optimizer = initilize()
 
     for epoch in range(1, n_epochs + 1):
 
         print("Epoch number {}".format(epoch))
         train_losses = train_sigloss(network,optimizer)
-        print("Training Complete")
-        hits,correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations = test(network,num_test_batches,test_batch_size,-1,True)
+        print("Training Complete, losses {}".format(train_losses))
+        test_losses,total_number_correct,true_positive_count,false_positive_count = test(network,-1)
         print("Testing Complete")
-        print(deviations)
-        print("{} correct, {} loss, {} times signal was missed, {} times signal was contaminated, {} times signal appeared in the data".format(correct,test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset))
-
+        print("loss: {} percent accuracy: {}, true positives {], false positives".format(test_losses,total_number_correct/10000,true_positive_count,false_positive_count))
         torch.save(network.state_dict(), '/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/model.pth')
 
 
