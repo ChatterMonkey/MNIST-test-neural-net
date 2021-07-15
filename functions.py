@@ -5,15 +5,17 @@ from variables import signal
 
 def sig_loss(expectedSignal,expectedBackground):
     def sigloss(y_true,y_pred):
-        print(expectedBackground)
-        print(expectedSignal)
+        #print(expectedBackground)
+        #print(expectedSignal)
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
         backgroundWeight = expectedBackground/torch.sum(1-y_true)   #expected/actual background numbers
 
         s = signalWeight*torch.sum(y_pred*y_true)
         b = backgroundWeight*torch.sum(y_pred*(1-y_true))
 
-        return (s+b )/(s*s+ 0.000000001)
+        exp = torch.exp(-(s*s)/(s+b+ 0.000000001))
+        scaled_exp = torch.exp(-(s*s)/(s+b+ 0.000000001))*10000000
+        return scaled_exp
     return sigloss
 
 

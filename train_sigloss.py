@@ -8,7 +8,7 @@ from functions import significance_loss
 def train_sigloss(network, optimizer): #train with the significance loss
 
     network.train() #turn on training specific stuff like dropout layers
-    loss_function = significance_loss(train_batch_size/10,9*train_batch_size/10)
+
     loss_for_each_batch = []
 
     for batch, (data, target) in enumerate(train_loader):
@@ -23,9 +23,10 @@ def train_sigloss(network, optimizer): #train with the significance loss
             #torch.save(network.state_dict(), '/Users/mayabasu/results/model.pth')
             #torch.save(optimizer.state_dict(), '/Users/mayabasu/results/optimizer.pth')
 
-        loss_for_each_batch.append(loss)
+        loss_for_each_batch.append(loss.item())
         loss.backward()
         optimizer.step()
+    print("foot print is {}".format(network(torch.ones(1,28,28))))
 
     return loss_for_each_batch
 
