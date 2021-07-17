@@ -36,9 +36,11 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
 
                 predicted_values = output.data.max(1)[1] #pred is a tensor list of all of the neural network's predicted valeus
                 #print(output)
-                #print(predicted_values)
+                print("predicted values")
+                print(predicted_values)
                 #print(target)
                 total_number_correct += predicted_values.eq(target.data.view_as(predicted_values)).sum() # .eq compares pred and target and gives true for a match,and false for a miss. .sum() adds num of True, view_as is for the dimentional matc
+                print("total number correct")
                 print(total_number_correct)
                 for i in range(len(target)):
                     if predicted_values[i]==signal:

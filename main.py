@@ -24,15 +24,16 @@ def initilize():
 def train_and_test():
     torch.manual_seed(random_seed)
     network = Net()
+
     optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
-    #network,optimizer = initilize()
+
     test_loss_list = []
     train_loss_list = []
 
     for epoch in range(1, n_epochs + 1):
 
         print("Epoch number {}".format(epoch))
-        train_losses = train_sigloss(network,optimizer)
+        train_losses = train(network,optimizer)
         for i in range(len(train_losses)):
             print(train_losses[i])
             train_loss_list.append(math.exp(train_losses[i]))

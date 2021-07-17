@@ -1,9 +1,11 @@
 import torch
 from loaders import train_loader
 from variables import *
+import torch.nn.functional
 
 
-def train(network, optimizer, num_train_batches, train_batch_size, epoch):
+
+def train(network, optimizer):
 
     network.train()
     train_losses = []
@@ -26,9 +28,10 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
 
         training_weight = torch.tensor(training_weight_list).float()
 
-        loss = torch.functional.nll_loss(output, target,weight=training_weight)
+        loss = torch.nn.functional.nll_loss(output, target)
+
         #loss = F.nll_loss(output, target)
-        print("loss r{}".format(loss))
+        #print("loss r{}".format(loss))
 
         loss.backward()
         optimizer.step()
@@ -36,9 +39,9 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
         if batch % log_interval ==0:
             print("LOSS IS {}".format(loss))
             print("Training batch {}".format(batch))
-            print(output)
+            #print(output)
 
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch * train_batch_size, len(train_loader.dataset), 100. * batch / len(train_loader), loss.item()))
+            print('Train Epoch:  [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format( batch * train_batch_size, len(train_loader.dataset), 100. * batch / len(train_loader), loss.item()))
         train_losses.append(loss.item())
 
         torch.save(network.state_dict(), '/Users/mayabasu/results/model.pth')
