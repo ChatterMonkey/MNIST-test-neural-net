@@ -34,7 +34,9 @@ def train(network, optimizer, num_train_batches, train_batch_size, epoch):
         optimizer.step()
 
         if batch % log_interval ==0:
+            print("LOSS IS {}".format(loss))
             print("Training batch {}".format(batch))
+            print(output)
 
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(epoch, batch * train_batch_size, len(train_loader.dataset), 100. * batch / len(train_loader), loss.item()))
         train_losses.append(loss.item())

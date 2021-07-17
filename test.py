@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional
 from loaders import test_loader
-from variables import signal,test_batch_size
+from variables import signal,test_batch_size,train_batch_size
 from functions import significance_loss
 
 def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variable

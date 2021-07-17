@@ -19,6 +19,7 @@ def train_sigloss(network, optimizer): #train with the significance loss
         loss = significance_loss(target,output,train_batch_size)
 
         if batch % log_interval == 0:
+
             print("Training batch {}/{}, loss was {}".format(batch,60000/train_batch_size,loss))
             #torch.save(network.state_dict(), '/Users/mayabasu/results/model.pth')
             #torch.save(optimizer.state_dict(), '/Users/mayabasu/results/optimizer.pth')
