@@ -4,50 +4,41 @@ from variables import *
 import torch.nn.functional
 
 
-
 def train(network, optimizer):
-
     network.train()
     train_losses = []
 
     for batch, (data, target) in enumerate(train_loader):
+        for i in range(len(target)):
+            if target[i] == signal:
+                target[i] = 1
 
-        #if (batch < num_train_batches):
+            else:
+                target[i] = 0
+
         optimizer.zero_grad()
         output = network(data)
+        # print(output)
 
-        training_weight_list = []
+        output = output.float()
+        target = target.float()
+        output = torch.reshape(output, (-1,))
 
-        for i in range(10):
-            if i == signal:
-                training_weight_list.append(signal_weight_strength)
-                #training_weight_list.append(1)
-            else:
-                #training_weight_list.append((1-signal_weight_strength)/9)
-                training_weight_list.append(1)
+        print("TARGET")
+        print(target)
 
-        training_weight = torch.tensor(training_weight_list).float()
-
-        loss = torch.nn.functional.nll_loss(output, target)
-
-        #loss = F.nll_loss(output, target)
-        #print("loss r{}".format(loss))
+        loss = torch.nn.functional.mse_loss(output, target)
+        if batch%10 ==0:
+            train_losses.append(loss.item())
 
         loss.backward()
         optimizer.step()
 
-        if batch % log_interval ==0:
+        if batch % log_interval == 0:
             print("LOSS IS {}".format(loss))
             print("Training batch {}".format(batch))
-            #print(output)
 
-            print('Train Epoch:  [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format( batch * train_batch_size, len(train_loader.dataset), 100. * batch / len(train_loader), loss.item()))
-        train_losses.append(loss.item())
-
-        torch.save(network.state_dict(), '/Users/mayabasu/results/model.pth')
-        torch.save(optimizer.state_dict(), '/Users/mayabasu/results/optimizer.pth')
-       # else:
-        #    print("break")
-          #  break
+            torch.save(network.state_dict(), '/Users/mayabasu/results/model.pth')
+            torch.save(optimizer.state_dict(), '/Users/mayabasu/results/optimizer.pth')
 
     return train_losses

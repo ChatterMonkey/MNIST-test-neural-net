@@ -15,6 +15,8 @@ def train_sigloss(network, optimizer): #train with the significance loss
         optimizer.zero_grad()
 
         output = network(data)
+        #print(output)
+        print(target)
 
         loss = significance_loss(target,output,train_batch_size)
 

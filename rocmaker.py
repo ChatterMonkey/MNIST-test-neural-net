@@ -23,7 +23,7 @@ def make_roc_curve(cutoffs, network,filepath):
     for i in range(len(cutoffs)):
 
 
-        hits, correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations = test(network,num_test_batches,test_batch_size,cutoffs[i],True)
+        hits, correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations = test(network,test_batch_size,cutoffs[i],True)
         print("fpc = {}, tpc = {}".format(false_positive_count,true_positive_count))
         print("DEVIATIONS {}".format(deviations))
         print("contaminated {} times, missed {} times, hit {} times".format(num_times_signal_was_contaminated,num_times_signal_was_missed, hits))

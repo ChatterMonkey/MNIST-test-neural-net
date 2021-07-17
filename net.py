@@ -1,6 +1,6 @@
 from torch import nn as nn
 from torch.nn import functional as F
-
+import torch
 
 class Net(nn.Module):
     def __init__(self):
@@ -9,7 +9,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(320, 50)
-        self.fc2 = nn.Linear(50, 10)
+        self.fc2 = nn.Linear(50, 1)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
@@ -18,4 +18,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.softmax(x)
+        print(torch.sigmoid(x))
+
+        print("qeuryed")
+        return torch.sigmoid(x)

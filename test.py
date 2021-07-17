@@ -9,6 +9,7 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
     network.eval()   #turn off drop off layers etc. for testing
     test_losses = []
     total_number_correct = 0
+
     sample_output = 0
 
     true_positive_count = 0 #number of times that the neural network correctly identified the signal
@@ -16,6 +17,12 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
 
     with torch.no_grad():  #turn of gradient decent
         for batch, (data, target) in enumerate(test_loader):
+
+            for i in range(len(target)):
+                if target[i]==signal:
+                    target[i] = 1
+                else:
+                    target[i] = 0
 
             output = network(data) #query the neural network
             if batch == 0:
@@ -34,16 +41,22 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
                             false_positive_count += 1 #neural network thought the background was signal
             else:
 
-                predicted_values = output.data.max(1)[1] #pred is a tensor list of all of the neural network's predicted valeus
+                #predicted_values = output.data.max(1, keepdim=True)[1] #pred is a tensor list of all of the neural network's predicted valeus
+                for i in range(len(output)):
+                    if output[i] > 0.5:
+                        output[i] = 1
+                    else:
+                        output[i] = 0
                 #print(output)
-                print("predicted values")
-                print(predicted_values)
+                #print("predicted values")
+
+                #print(predicted_values)
                 #print(target)
-                total_number_correct += predicted_values.eq(target.data.view_as(predicted_values)).sum() # .eq compares pred and target and gives true for a match,and false for a miss. .sum() adds num of True, view_as is for the dimentional matc
+                total_number_correct += output.eq(target.data.view_as(output)).sum() # .eq compares pred and target and gives true for a match,and false for a miss. .sum() adds num of True, view_as is for the dimentional matc
                 print("total number correct")
                 print(total_number_correct)
                 for i in range(len(target)):
-                    if predicted_values[i]==signal:
+                    if output[i]>0.5:
                         if target[i] == signal:
                             true_positive_count += 1 #neural network correctly classified the signal
                         else:
