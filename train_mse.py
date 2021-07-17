@@ -1,16 +1,18 @@
 import torch
-from loaders import train_loader
-from variables import *
 import torch.nn.functional
 from functions import prepare_target
-
+from loaders import train_loader
+from variables import *
 
 def train(network, optimizer):
     network.train()
-    optimizer.zero_grad()
+
     train_losses = []
 
+
     for batch, (data, target) in enumerate(train_loader):
+        optimizer.zero_grad()
+
 
         target = prepare_target(target) #convert target into 1 for siganl and 0 for background
         output = torch.reshape(network(data), (-1,)) #query network and reshape output
