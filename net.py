@@ -18,7 +18,8 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        print(torch.sigmoid(x))
+        #print(x)
+       # print(torch.sigmoid(x))
 
-        print("qeuryed")
+       # print("qeuryed")
         return torch.sigmoid(x)

@@ -12,8 +12,6 @@ def train(network, optimizer):
 
     for batch, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
-
-
         target = prepare_target(target) #convert target into 1 for siganl and 0 for background
         output = torch.reshape(network(data), (-1,)) #query network and reshape output
         loss = torch.nn.functional.mse_loss(output, target)

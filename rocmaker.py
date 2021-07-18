@@ -22,24 +22,22 @@ def make_roc_curve(cutoffs, network,filepath):
 
     for i in range(len(cutoffs)):
 
-
-        hits, correct, test_losses,num_times_signal_was_missed,num_times_signal_was_contaminated,num_times_signal_appears_in_dataset, false_positive_count,true_positive_count,deviations = test(network,test_batch_size,cutoffs[i],True)
+        test_losses,total_number_correct,true_positive_count,false_positive_count,sample_output= test(network,cutoffs[i])
         print("fpc = {}, tpc = {}".format(false_positive_count,true_positive_count))
-        print("DEVIATIONS {}".format(deviations))
-        print("contaminated {} times, missed {} times, hit {} times".format(num_times_signal_was_contaminated,num_times_signal_was_missed, hits))
-        print(num_times_signal_appears_in_dataset)
+
         false_positives.append(false_positive_count)
         true_positives.append(true_positive_count)
+
     print(false_positives)
     print(true_positives)
 
     false_positives_scaled = []
     true_positives_scaled = []
     for i in range(len(false_positives)):
-        false_positives_scaled.append(false_positives[i]/(10000-num_times_signal_appears_in_dataset))
+        false_positives_scaled.append(false_positives[i]/9000)
 
     for i in range(len(true_positives)):
-        true_positives_scaled.append(true_positives[i]/num_times_signal_appears_in_dataset)
+        true_positives_scaled.append(true_positives[i]/1000)
 
     plt.plot(false_positives_scaled,true_positives_scaled)
     plt.ylabel('True Positive Rate')

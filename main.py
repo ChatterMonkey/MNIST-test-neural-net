@@ -3,7 +3,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from net import Net
 from test import test
-from train import train
+from train_mse import train
 from variables import *
 from train_sigloss import train_sigloss
 from loaders import test_loader
@@ -25,7 +25,7 @@ def train_and_test():
     torch.manual_seed(random_seed)
     network = Net()
 
-    optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
+    optimizer = optim.Adam(network.parameters(), lr=learning_rate)
 
     test_loss_list = []
     train_loss_list = []
@@ -33,19 +33,20 @@ def train_and_test():
     for epoch in range(1, n_epochs + 1):
 
         print("Epoch number {}".format(epoch))
-        train_losses = train(network,optimizer)
+        train_losses = train_sigloss(network,optimizer)
 
         for i in range(len(train_losses)):
             print(train_losses[i])
             train_loss_list.append(train_losses[i])
 
         print("Training Complete, losses {}".format(train_losses))
+
         test_losses,total_number_correct,true_positive_count,false_positive_count,sample_output = test(network,-1)
         for i in range(len(test_losses)):
-            test_loss_list.append(math.exp(test_losses[i]))
+            test_loss_list.append(test_losses[i])
 
-        examples = enumerate(test_loader)
-        batch_idx, (example_data, example_targets) = next(examples)
+        #examples = enumerate(test_loader)
+        #batch_idx, (example_data, example_targets) = next(examples)
 
         #print(network(example_data))
 
@@ -68,17 +69,17 @@ def train_and_test():
     plt.plot(train_loss_list)
     plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001train.png")
 
-    #plt.subplot(1,2,2)
-    #plt.xlabel("Batch # (10 batches per epoch)")
-    #plt.ylabel("Ln of the Test Loss")
-    #plt.ylim(-10,10)
-
-    #plt.plot(test_loss_list)
+    plt.subplot(1,2,2)
+    plt.xlabel("Batch # (10 batches per epoch)")
+    plt.ylabel("Ln of the Test Loss")
 
 
+    plt.plot(test_loss_list)
 
 
-    #plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001test_alone.png")
+
+
+    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001test_alone.png")
 
 train_and_test()
 
