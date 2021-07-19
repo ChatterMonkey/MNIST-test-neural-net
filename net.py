@@ -20,9 +20,9 @@ class Net(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         #print(x)
-        print("outputs")
-        for i in range(10):
-            print(torch.sigmoid(x)[i])
+        #print("outputs")
+        #for i in range(10):
+         #   print(torch.sigmoid(x)[i])
 
-        print("queried")
+        #print("queried")
         return torch.sigmoid(x)

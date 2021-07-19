@@ -42,18 +42,18 @@ def train_and_test():
 
         print("Training Complete, loss: {}".format(train_losses))
         for i in range(len(train_losses)):
-            train_loss_list.append(train_losses[i]) #store the loss or the log of the loss
-            # train_loss_list.append(math.log(train_losses[i]))
+            #train_loss_list.append(train_losses[i]) #store the loss
+            train_loss_list.append(math.exp(train_losses[i]))
 
 
         if testing_with_full_data:
             test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test(network, -1) #-1 -> do not generate ROC curve
         else:
             test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = even_test(network, -1) #-1 -> do not generate ROC curve
-
+            print("test losses {}".format(test_losses))
         for i in range(len(test_losses)):
-            test_loss_list.append(test_losses[i])
-            test_loss_list.append(math.log(test_losses[i]))
+            #test_loss_list.append(test_losses[i])
+            test_loss_list.append(math.exp(test_losses[i]))
 
         print("Testing Complete, loss: {}".format(test_losses))
 
@@ -66,14 +66,15 @@ def train_and_test():
     plt.ylabel("Training Loss")
     # plt.ylim(-10,10)
     plt.plot(train_loss_list)
-    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001train.png")
+    #plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001train.png")
 
 
     plt.subplot(1, 2, 2)
     plt.xlabel("Batch # (10 batches per epoch)")
     plt.ylabel("Test Loss")
     plt.plot(test_loss_list)
-    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/lr0.001test_alone.png")
+    print(test_loss_list)
+    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/loss.png")
 
 
 train_and_test()

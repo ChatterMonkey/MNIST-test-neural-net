@@ -11,7 +11,7 @@ def train_even_sigloss(network, optimizer):  # train with the significance loss 
     loss_for_each_batch = []
 
     for batch, (data, target) in enumerate(train_loader):
-        print("data")
+
 
         prossesed_data_list = [] # a list of the images that are either 4 or 7
         prossesed_target_list = [] # 4 and 7's from the target
@@ -35,6 +35,9 @@ def train_even_sigloss(network, optimizer):  # train with the significance loss 
 
         optimizer.zero_grad()
         output = network(prossesed_data) #query the network with only the 4 and 7 images
+        print("first 10 outputs")
+        for i in range(10):
+            print(output[i])
         loss = significance_loss(prossesed_target,output,train_batch_size)
         loss_for_each_batch.append(loss.item())
         loss.backward()

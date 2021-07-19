@@ -9,14 +9,14 @@ def even_test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional v
     network.eval()   #turn off drop off layers etc. for testing
     test_losses = []
     total_number_correct = 0
-
     sample_output = 0
-
     true_positive_count = 0 #number of times that the neural network correctly identified the signal
     false_positive_count = 0 #number of times the neural network misclassified backgroud as signal
 
     with torch.no_grad():  #turn of gradient decent
         for batch, (data, target) in enumerate(test_loader):
+
+            #first pick out only 4's and 7's from the mnist dataset
             prossesed_data_list = []
             prossesed_target_list = []
 
@@ -29,23 +29,22 @@ def even_test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional v
                     prossesed_data_list.append(data[i])
             prossesed_data = torch.zeros(len(prossesed_data_list),1,28,28)
             prossesed_target = torch.zeros(len(prossesed_target_list))
-            #print(prossesed_target_list)
+
 
             for i in range(len(prossesed_data_list)):
                 prossesed_data[i] = prossesed_data_list[i]
             for i in range(len(prossesed_target_list)):
                 prossesed_target[i] = prossesed_target_list[i]
 
-
-            #print(target)
-            #print(prossesed_target)
-
-
-
-            #target = prepare_target(target)
             output = network(prossesed_data) #query the neural network
+            #print("TEST")
+            #for i in range(10):
+             #   print(prossesed_target[i])
 
             loss = significance_loss(prossesed_target,output,test_batch_size)
+            #for i in range(10):
+             #   print(prossesed_target[i])
+
             test_losses.append(loss.item())
             if batch == 0:
                 sample_output = output
@@ -59,24 +58,32 @@ def even_test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional v
                         else:
                             false_positive_count += 1 #neural network thought the background was signal
             else:
-
+                #print("raw ouptu")
+                #print(output)
+                #print( len(output))
                 #predicted_values = output.data.max(1, keepdim=True)[1] #pred is a tensor list of all of the neural network's predicted valeus
                 for i in range(len(output)):
                     if output[i] > 0.5:
                         output[i] = 1
                     else:
                         output[i] = 0
+                #rint(output)
 
 
                 #total_number_correct += output.eq(prossesed_target.data.view_as(output)).sum() # .eq compares pred and target and gives true for a match,and false for a miss. .sum() adds num of True, view_as is for the dimentional matc
+                #prossesed_target = prepare_target(prossesed_target) # convert target to 1's and 0's
+                #print(prossesed_target)
                 for i in range(len(prossesed_target)):
+                    #print(prossesed_target[i])
+                    #print(output[i])
                     if prossesed_target[i] == output[i]:
                         total_number_correct +=1
 
-
+                print(output)
                 for i in range(len(output)):
                     if output[i]==1:
-                        if prossesed_target_list[i] == 4:
+
+                        if prossesed_target[i] == 1:
                             true_positive_count += 1 #neural network correctly classified the signal
                         else:
                             false_positive_count += 1 #neural network thought the background was signal

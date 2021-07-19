@@ -3,36 +3,38 @@ from variables import signal
 
 def prepare_target(target):
     for i in range(len(target)):
-        if target[i] == signal: #prepare target
+        if target[i].item() == signal: #prepare target
+            #print("yes")
             target[i] = 1
         else:
+            #print("no")
+            #print(target[i].item())
+            #print(signal)
             target[i] = 0
     target = target.float()
     return target
 
 def sig_loss(expectedSignal,expectedBackground):
     def sigloss(y_true,y_pred):
-        print(expectedSignal)
-        print(torch.sum(y_true))
-        print("Y TRUE!!!!!")
-        for i in range(10):
-            print(y_true[i])
+        #print(expectedSignal)
+        #print(torch.sum(y_true))
+        #print("Y TRUE!!!!!")
+        #for i in range(10):
+        #    print(y_true[i])
 
 
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
         backgroundWeight = expectedBackground/torch.sum(1-y_true)   #expected/actual background numbers
-        print("weights are {},{}".format(signalWeight,backgroundWeight))
+
 
 
         y_pred_rearanged = torch.reshape(y_pred,(-1,))
 
 
         s = torch.sum(y_pred_rearanged*y_true)
-        print("s")
-        print(s)
-        #print("s = {}".format(s))
+
         b = torch.sum(y_pred_rearanged*(1-y_true))
-        print(b)
+
 
         return -(s*s)/(s+b+0.000001)
     return sigloss
