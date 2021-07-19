@@ -15,7 +15,8 @@ def sig_loss(expectedSignal,expectedBackground):
         print(expectedSignal)
         print(torch.sum(y_true))
         print("Y TRUE!!!!!")
-        print(y_true)
+        for i in range(10):
+            print(y_true[i])
 
 
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
@@ -33,8 +34,7 @@ def sig_loss(expectedSignal,expectedBackground):
         b = torch.sum(y_pred_rearanged*(1-y_true))
         print(b)
 
-
-        return (s+b)/(s*s +0.000001)
+        return (s+b)/(s*s+0.000001)
     return sigloss
 
 
@@ -93,7 +93,7 @@ def significance_loss(target,output,batch_size):
     target = prepare_target(target)
     print("preparedtarget {}".format(target))
 
-    sigloss = sig_loss(batch_size/10,9*batch_size/10)
+    sigloss = sig_loss(batch_size/10,batch_size/10)
     loss = sigloss(target,output)
     return loss
 

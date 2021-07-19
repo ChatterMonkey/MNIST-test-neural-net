@@ -34,7 +34,7 @@ def make_roc_curve(cutoffs, network,filepath):
     false_positives_scaled = []
     true_positives_scaled = []
     for i in range(len(false_positives)):
-        false_positives_scaled.append(false_positives[i]/9000)
+        false_positives_scaled.append(false_positives[i]/1000)
 
     for i in range(len(true_positives)):
         true_positives_scaled.append(true_positives[i]/1000)

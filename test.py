@@ -17,9 +17,45 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
 
     with torch.no_grad():  #turn of gradient decent
         for batch, (data, target) in enumerate(test_loader):
+            prossesed_data_list = []
+            prossesed_target_list = []
+
+            for i in range(len(target)):
+                if target[i] == 4:
+                    prossesed_target_list.append(4)
+                    prossesed_data_list.append(data[i])
+                if target[i] ==7:
+                    prossesed_target_list.append(7)
+                    prossesed_data_list.append(data[i])
+            prossesed_data = torch.zeros(len(prossesed_data_list),1,28,28)
+            prossesed_target = torch.zeros(len(prossesed_target_list))
+            print(prossesed_target_list)
+
+            for i in range(len(prossesed_data_list)):
+                prossesed_data[i] = prossesed_data_list[i]
+            for i in range(len(prossesed_target_list)):
+                prossesed_target[i] = prossesed_target_list[i]
+
+
+            print(target)
+            print(prossesed_target)
+
+
+
+
+
+
+
+
+
+
+
             thinks_are_signal = 0
             #target = prepare_target(target)
-            output = network(data) #query the neural network
+            output = network(prossesed_data) #query the neural network
+
+            loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)), prepare_target(prossesed_target))
+            test_losses.append(loss.item())
             if batch == 0:
                 sample_output = output
 
@@ -27,7 +63,7 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
                 for i in range(len(output)):
 
                     if (output[i] > cutoff): # network thinks it is the signal
-                        if target[i] == signal:
+                        if prossesed_target_list[i] == signal:
                             true_positive_count += 1 #neural network correctly classified the signal
                         else:
                             false_positive_count += 1 #neural network thought the background was signal
@@ -42,18 +78,18 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
                         output[i] = 0
                 print("THINKS ARE SIGNAL {}".format(thinks_are_signal))
 
-                total_number_correct += output.eq(target.data.view_as(output)).sum() # .eq compares pred and target and gives true for a match,and false for a miss. .sum() adds num of True, view_as is for the dimentional matc
+                total_number_correct += output.eq(prepare_target(prossesed_target).data.view_as(output)).sum() # .eq compares pred and target and gives true for a match,and false for a miss. .sum() adds num of True, view_as is for the dimentional matc
                 print("total number correct")
                 print(total_number_correct)
                 for i in range(len(output)):
                     if output[i]==1:
-                        if target[i] == 1:
+                        if prossesed_target_list[i] == 4:
                             true_positive_count += 1 #neural network correctly classified the signal
                         else:
                             false_positive_count += 1 #neural network thought the background was signal
 
-            loss = significance_loss(target,output,test_batch_size)
-            test_losses.append(loss.item())
+            #loss = significance_loss(prossesed_target,output,test_batch_size)
+
             print("LOSSS {}".format(loss.item()))
 
         return (test_losses,total_number_correct,true_positive_count,false_positive_count,sample_output)

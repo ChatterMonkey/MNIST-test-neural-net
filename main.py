@@ -25,7 +25,7 @@ def train_and_test():
     torch.manual_seed(random_seed)
     network = Net()
 
-    optimizer = optim.Adam(network.parameters(), lr=learning_rate)
+    optimizer = optim.SGD(network.parameters(), lr=learning_rate,momentum = momentum)
 
     test_loss_list = []
     train_loss_list = []
@@ -54,7 +54,7 @@ def train_and_test():
 
         print("Testing Complete")
         print(total_number_correct)
-        print("percent accuracy: {}, true positives {}, false positives {}".format(100*total_number_correct/10000,true_positive_count,false_positive_count))
+        print("percent accuracy: {}, true positives {}, false positives {}".format(100*total_number_correct/2000,true_positive_count,false_positive_count))
         torch.save(network.state_dict(), '/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/model.pth')
         #print("LOSSES")
         #print(train_losses)
@@ -63,7 +63,7 @@ def train_and_test():
         #print(test_loss_list)
     plt.subplot(1,2,1)
     plt.xlabel("Batch # (15 batches per epoch)")
-    plt.ylabel("Ln of the Training Loss")
+    plt.ylabel("Training Loss")
     #plt.ylim(-10,10)
 
     plt.plot(train_loss_list)
@@ -71,7 +71,7 @@ def train_and_test():
 
     plt.subplot(1,2,2)
     plt.xlabel("Batch # (10 batches per epoch)")
-    plt.ylabel("Ln of the Test Loss")
+    plt.ylabel("Test Loss")
 
 
     plt.plot(test_loss_list)
