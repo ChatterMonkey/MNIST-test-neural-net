@@ -1,12 +1,12 @@
 
 signal = 4
 
-n_epochs = 40
+n_epochs = 80
 train_batch_size = 4000
 
 test_batch_size = 50000
 
-learning_rate = 0.001
+learning_rate = 0.01
 momentum = 0.5
 signal_weight_strength = 1
 

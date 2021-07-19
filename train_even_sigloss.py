@@ -4,7 +4,7 @@ from variables import *
 from functions import significance_loss,prepare_target
 import torch.nn.functional
 
-def train_sigloss(network, optimizer):  # train with the significance loss
+def train_even_sigloss(network, optimizer):  # train with the significance loss and 50% signal, 50% background
     print("Training with 4 and 7 as signal and background, using significance loss")
 
     network.train()  # turn on training specific stuff like dropout layers

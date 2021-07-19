@@ -34,7 +34,7 @@ def sig_loss(expectedSignal,expectedBackground):
         b = torch.sum(y_pred_rearanged*(1-y_true))
         print(b)
 
-        return (s+b)/(s*s+0.000001)
+        return -(s*s)/(s+b+0.000001)
     return sigloss
 
 
@@ -66,11 +66,6 @@ def sig_loss2(expectedSignal,expectedBackground):
         return -(s*s)/(s+b+0.000001)
     return sigloss
 
-
-
-
-
-
 def significance_loss2(target,output,batch_size):
     torch.autograd.set_detect_anomaly(True)
 
@@ -89,9 +84,9 @@ def significance_loss2(target,output,batch_size):
 def significance_loss(target,output,batch_size):
     #print("significance loss called")
     torch.autograd.set_detect_anomaly(True)
-    print("target {}".format(target))
+    #print("target {}".format(target))
     target = prepare_target(target)
-    print("preparedtarget {}".format(target))
+    #print("preparedtarget {}".format(target))
 
     sigloss = sig_loss(batch_size/10,batch_size/10)
     loss = sigloss(target,output)
