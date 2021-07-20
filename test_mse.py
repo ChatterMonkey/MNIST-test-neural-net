@@ -4,7 +4,7 @@ from loaders import test_loader
 from variables import signal,test_batch_size,train_batch_size
 from functions import significance_loss,prepare_target
 
-def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variable
+def test_mse(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variable
     print("cutoff is {}".format(cutoff))
     network.eval()   #turn off drop off layers etc. for testing
     test_losses = []
@@ -17,7 +17,7 @@ def test(network, cutoff = -1): #set cutoff to -1 for no cutoff, optional variab
         for batch, (data, target) in enumerate(test_loader):
 
             output = network(data) #query the neural network
-            loss = significance_loss(target,output,test_batch_size)
+            loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)),target)
             test_losses.append(loss.item())
 
             if batch == 0:

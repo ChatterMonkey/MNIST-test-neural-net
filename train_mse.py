@@ -4,7 +4,7 @@ from functions import prepare_target
 from loaders import train_loader
 from variables import *
 
-def train(network, optimizer):
+def train_mse(network, optimizer):
     network.train()
 
     train_losses = []
@@ -15,11 +15,13 @@ def train(network, optimizer):
         target = prepare_target(target) #convert target into 1 for siganl and 0 for background
         output = torch.reshape(network(data), (-1,)) #query network and reshape output
         loss = torch.nn.functional.mse_loss(output, target)
+        loss.backward()
+
 
         if batch % 10 == 0:
             train_losses.append(loss.item())
 
-        loss.backward()
+
         optimizer.step()
 
         if batch % log_interval == 0:

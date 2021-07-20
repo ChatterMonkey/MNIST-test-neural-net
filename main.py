@@ -2,18 +2,24 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from net import Net
-from test import test
-from train_mse import train
+from test_sigloss import test_sigloss
+from train_mse import train_mse
 from variables import *
 from train_sigloss import train_sigloss
 from train_even_sigloss import train_even_sigloss
 from even_test import even_test
 from loaders import test_loader
 import math
+from test_mse import test_mse
 
 torch.backends.cudnn.enabled = False
 
-testing_with_full_data = False
+testing_with_full_data = True
+loss_function_ids = {"Significance Loss":0,"Mean Squared Error":1}
+loss_id = 1
+
+if not testing_with_full_data: #training with only two numbers is only written for sig_loss at the moment
+    assert(loss_id !=1)
 
 if testing_with_full_data:
     total_number_of_datapoints = 10000
@@ -27,7 +33,7 @@ def initilize():
     return network, optimizer
 
 
-def train_and_test():
+def train_and_test(loss_function_id):
     network, optimizer = initilize()
     test_loss_list = []
     train_loss_list = []
@@ -35,25 +41,37 @@ def train_and_test():
     for epoch in range(1, n_epochs + 1):
         print("Epoch number {}".format(epoch))
 
-        if testing_with_full_data:
-            train_losses = train_sigloss(network, optimizer)
+        if loss_function_id == 0: #sig loss
+            if testing_with_full_data:
+                train_losses = train_sigloss(network, optimizer)
+            else:
+                train_losses = train_even_sigloss(network, optimizer)
+        if loss_function_id == 1:
+            train_losses = train_mse(network,optimizer)
         else:
-            train_losses = train_even_sigloss(network, optimizer)
+            print("LOSS FUNCTION ID NOT RECOGNIZED")
 
         print("Training Complete, loss: {}".format(train_losses))
+
         for i in range(len(train_losses)):
-            #train_loss_list.append(train_losses[i]) #store the loss
-            train_loss_list.append(math.exp(train_losses[i]))
+            train_loss_list.append(train_losses[i]) #store the loss
+            #train_loss_list.append(math.exp(train_losses[i]))
 
+        if loss_function_id ==0:
+            if testing_with_full_data:
+                test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test_sigloss(network, -1) #-1 -> do not generate ROC curve
+            else:
+                test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = even_test(network, -1) #-1 -> do not generate ROC curve
+                print("test losses {}".format(test_losses))
+        if loss_function_id ==1:
+            test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test_mse(network, -1)
 
-        if testing_with_full_data:
-            test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test(network, -1) #-1 -> do not generate ROC curve
         else:
-            test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = even_test(network, -1) #-1 -> do not generate ROC curve
-            print("test losses {}".format(test_losses))
+            print("LOSS FUNCTION ID NOT RECOGNIZED")
+
         for i in range(len(test_losses)):
-            #test_loss_list.append(test_losses[i])
-            test_loss_list.append(math.exp(test_losses[i]))
+            test_loss_list.append(test_losses[i])
+            #test_loss_list.append(math.exp(test_losses[i]))
 
         print("Testing Complete, loss: {}".format(test_losses))
 
@@ -77,4 +95,4 @@ def train_and_test():
     plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/loss.png")
 
 
-train_and_test()
+train_and_test(loss_id)
