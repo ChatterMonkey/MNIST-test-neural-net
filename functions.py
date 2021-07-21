@@ -1,5 +1,5 @@
 import torch
-from variables import signal
+from variables import signal,train_batch_size,test_batch_size
 
 def prepare_target(target):
     for i in range(len(target)):
@@ -16,11 +16,6 @@ def prepare_target(target):
 
 def sig_loss(expectedSignal,expectedBackground):
     def sigloss(y_true,y_pred):
-        #print(expectedSignal)
-        #print(torch.sum(y_true))
-        #print("Y TRUE!!!!!")
-        #for i in range(10):
-        #    print(y_true[i])
 
 
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
@@ -41,56 +36,17 @@ def sig_loss(expectedSignal,expectedBackground):
 
 
 
-def sig_loss2(expectedSignal,expectedBackground):
-    def sigloss(y_true,y_pred):
-        #print(expectedSignal)
-        #print(expectedBackground)
-        #print(expectedSignal)
-        signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
-        backgroundWeight = expectedBackground/torch.sum(1-y_true)  #expected/actual background numbers
-
-        s = signalWeight*torch.sum(y_pred*y_true)
-        inverted_target_matrix = torch.zeros(y_true.size()[0],10)
-        for i in range(y_true.size()[0]):
-            if y_true[i][signal] ==0:
-                inverted_target_matrix[i][signal] = 1
 
 
 
-        b = backgroundWeight*torch.sum(y_pred*inverted_target_matrix)
+def significance_loss(target,output,using_full_dataset):
 
-        #print("s {}".format(s))
-        #print("b {}".format(b))
-        #print("s+b {}".format(s+b))
-
-        #exp = torch.exp(-(s*s)/(s+b+ 0.000000001))
-        #scaled_exp = torch.exp(-(s*s)/(s+b+ 0.000000001))*10000000
-        return -(s*s)/(s+b+0.000001)
-    return sigloss
-
-def significance_loss2(target,output,batch_size):
-    torch.autograd.set_detect_anomaly(True)
-
-    target_matrix = torch.zeros(len(target),10)
-    for i in range(len(target)):
-        if target[i] == signal:
-            target_matrix[i][signal] = 1
-
-    sigloss = sig_loss2(batch_size/10,9*batch_size/10)
-    loss = sigloss(target_matrix,output)
-    return loss
-
-
-
-
-def significance_loss(target,output,batch_size):
-    #print("significance loss called")
-    torch.autograd.set_detect_anomaly(True)
-    #print("target {}".format(target))
     target = prepare_target(target)
-    #print("preparedtarget {}".format(target))
 
-    sigloss = sig_loss(batch_size/10,batch_size/10)
+    if using_full_dataset:
+        sigloss = sig_loss(len(target)/10,9*len(target)/10)
+    else:
+        sigloss = sig_loss(len(target)/10,len(target)/10)
+
     loss = sigloss(target,output)
     return loss
-

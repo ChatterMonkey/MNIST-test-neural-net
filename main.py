@@ -16,7 +16,7 @@ torch.backends.cudnn.enabled = False
 
 testing_with_full_data = True
 loss_function_ids = {"Significance Loss":0,"Mean Squared Error":1}
-loss_id = 1
+loss_id = 0
 
 if not testing_with_full_data: #training with only two numbers is only written for sig_loss at the moment
     assert(loss_id !=1)
@@ -57,14 +57,14 @@ def train_and_test(loss_function_id):
             train_loss_list.append(train_losses[i]) #store the loss
             #train_loss_list.append(math.exp(train_losses[i]))
 
-        if loss_function_id ==0:
+        if loss_function_id == 0:
             if testing_with_full_data:
                 test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test_sigloss(network, -1) #-1 -> do not generate ROC curve
             else:
                 test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = even_test(network, -1) #-1 -> do not generate ROC curve
                 print("test losses {}".format(test_losses))
-        if loss_function_id ==1:
-            test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test_mse(network, -1)
+        #if loss_function_id ==1:
+        #    test_losses, total_number_correct, true_positive_count, false_positive_count, sample_output = test_mse(network, -1)
 
         else:
             print("LOSS FUNCTION ID NOT RECOGNIZED")
@@ -95,4 +95,4 @@ def train_and_test(loss_function_id):
     plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/matplotlib_output/loss.png")
 
 
-train_and_test(loss_id)
+train_and_test(0)
