@@ -1,7 +1,7 @@
 
 signal = 4
 background = 7
-n_epochs = 20
+n_epochs = 8
 train_batch_size = 4000
 test_batch_size = 10000
 

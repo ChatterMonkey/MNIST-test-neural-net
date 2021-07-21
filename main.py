@@ -8,12 +8,13 @@ from test import test
 from loaders import test_loader,train_loader
 from functions import subset_data
 import math
+import os
 #for batch, (data, target) in enumerate(train_loader):
 #    for batch, (data, target) in enumerate(test_loader):
 torch.backends.cudnn.enabled = False
 
-using_full_data = False
-loss_function_ids = {"Mean Squared Error":0,"Significance Loss":1}
+using_full_data = True
+loss_function_ids = {"Mean Squared Error":0,"Significance Loss":1,"Binery Cross Entropy":2}
 
 
 
@@ -23,8 +24,29 @@ def initilize():
     optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
     return network, optimizer
 
+def file_check(path):
+    if os.path.exists(path):
+        print("A file already exists at {}".format(path))
+        overwite = input("Would you like to overwrite it? y/n")
+        if overwite == "y":
+            return True
+        else:
+            return False
+    else:
+        return True
 
-def train_and_test(loss_function_id):
+
+def train_and_test(loss_function_id,experiment_name):
+
+    loss_graph_filepath = "loss_graphs/"  + str(experiment_name) + ".png"
+    nn_filepath = "neuralnets/" + str(experiment_name) + ".pth"
+
+    if not file_check(nn_filepath):
+        print("quit to protect network file")
+        return "quit to protect network file"
+    if not file_check(loss_graph_filepath):
+        print("quit to protect network file")
+        return "quit to protect loss graph"
 
 
     network, optimizer = initilize()
@@ -67,51 +89,60 @@ def train_and_test(loss_function_id):
         else:
             print("Total number correct :{} ({}%) False positives:{} True Positives{}".format(total_number_correct,100*total_number_correct/(mnist_test_size/5),false_positive_count,true_positive_count))
 
-    torch.save(network.state_dict(), '/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/mse_20_partial_001.pth')
+    torch.save(network.state_dict(), nn_filepath)
+
     font1 = {'size':5}
+
     plt.subplot(2, 2, 1)
-    plt.ylabel("Training Loss (per batch)", fontdict = font1)
     plt.title("Training", fontdict = font1)
-    # plt.ylim(-10,10)
+
+    plt.ylabel("Training Loss (per batch)", fontdict = font1)
     plt.plot(train_loss_list)
 
-
     plt.subplot(2, 2, 2)
+    plt.title("Testing", fontdict = font1)
+
     plt.xlabel("Epoch number", fontdict = font1)
     plt.ylabel("Test Loss", fontdict = font1)
-    plt.title("Testing", fontdict = font1)
     plt.plot(test_loss_list)
 
-    print(test_loss_list)
-    significances = []
-    print(loss_function_id)
 
+    significances = []
     if loss_function_id == 1:
         for i in range(len(test_loss_list)):
             significances.append(math.sqrt(-1 * test_loss_list[i][0]))
     elif loss_function_id ==0:
         print("using seperate sig evaluation")
-        if using_full_data:
-            total_number = mnist_test_size
-        else:
-            total_number = mnist_test_size/5
         for i in range(len(tp)):
             significances.append(tp[i]/math.sqrt(tp[i] + fp[i]))
 
 
 
-
-
     plt.subplot(2, 2, 3)
+    plt.title("Significance", fontdict = font1)
     plt.xlabel("Epoch number", fontdict = font1)
     plt.ylabel("Testing Significance", fontdict = font1)
-    plt.title("Significance", fontdict = font1)
     plt.plot(significances)
 
 
+    plt.subplot(2, 2, 4)
+    plt.title("Accuracy", fontdict = font1)
+    plt.xlabel("Epoch number", fontdict = font1)
+    plt.ylabel("percent accuracy", fontdict = font1)
+    for i in range(len(correct)):
+        if using_full_data:
+            correct[i] = 100*correct[i]/mnist_test_size
+        else:
+            correct[i] = 100*correct[i]/(mnist_test_size/5)
 
-    plt.suptitle("MSE Loss 50 epochs, partial dataset", fontdict = font1)
-    plt.savefig("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/loss_graphs/mse_20_partial_001.png")
+
+    plt.plot(correct)
 
 
-train_and_test(0)
+
+
+    plt.suptitle(str(experiment_name), fontdict = font1)
+    plt.savefig(loss_graph_filepath)
+
+
+train_and_test(1,"test3")

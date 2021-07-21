@@ -13,7 +13,7 @@ def train(network, optimizer, data,target, loss_function_id):
     if loss_function_id == 0:
         target = prepare_target(target) #convert target into 1 for siganl and 0 for background
         loss = torch.nn.functional.mse_loss(output, target)
-    if loss_function_id == 1:
+    elif loss_function_id == 1:
         #print(target)
         target_length = torch.unique(target,True,False,False).shape[0]
         #print(target_length)
@@ -27,6 +27,11 @@ def train(network, optimizer, data,target, loss_function_id):
         else:
             print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
             return "warning"
+    elif loss_function_id == 2: #binery cross entropy
+            loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
+    else:
+        print("LOSS FUNCTION ID NOT VAID")
+        return "LOSS FUNCTION ID NOT VAID"
 
     loss.backward()
     optimizer.step()

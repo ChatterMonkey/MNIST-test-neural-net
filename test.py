@@ -18,7 +18,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
 
         if loss_function_id ==0: #mse loss, 2 numbers of full dataset
             loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)),prepare_target(target))
-        if loss_function_id ==1: #sig loss
+        elif loss_function_id ==1: #sig loss
             target_length = torch.unique(target,True,False,False).shape[0]
             if target_length == 2: #only 2 numbers
                 loss = significance_loss(target,output,False) #target preparation happens within significance loss
@@ -29,6 +29,13 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
             else:
                 print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
                 return "warning"
+        elif loss_function_id == 2: #binery cross entropy
+            loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
+        else:
+            print("LOSS FUNCTION ID NOT VAID")
+            return "LOSS FUNCTION ID NOT VAID"
+
+
         print(target)
 
         test_losses.append(loss.item())
@@ -38,14 +45,14 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
 
         if cutoff == -1: #-1 means use defult of 0.5
             cutoff = 0.5
-            print("default otpion")
+            #print("default otpion")
 
         for i in range(len(output)):
             if (output[i] > cutoff): # network thinks it is the signal
-                print(output[i])
+                #print(output[i])
                 output[i] = 1
-                print(output[i])
-                print(target[i])
+                #print(output[i])
+                #print(target[i])
                 if target[i] == 1:
                     true_positive_count += 1 #neural network correctly classified the signal
                     total_number_correct += 1 #network correctly identified signal

@@ -61,9 +61,9 @@ def make_roc_curve(cutoffs, network,filepath,loss_function_id,subset):
 
 
 
-cutoffs = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
 
-network = load_network("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/mse_20_partial.pth")
+network = load_network("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/sl_80_full.pth")
 
-make_roc_curve(cutoffs, network, "/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/roc_curves/mse_20_partial.png", 1,False)
+make_roc_curve(cutoffs, network, "/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/roc_curves/sl_80_full_roc.png", 1,False)
 

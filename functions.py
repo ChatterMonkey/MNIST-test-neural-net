@@ -22,7 +22,7 @@ def subset_data(data,target,background):
     for i in range(target_counts[0].shape[0]): #find where the signal and background are
         if target_counts[0][i] == signal or target_counts[0][i] == background:
             len_subset += target_counts[1][i]
-    print(len_subset)
+    #print(len_subset)
 
 
     data_subset = torch.zeros(len_subset,1,28,28)
