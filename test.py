@@ -16,7 +16,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
         output = network(data) #query the neural network
 
         if loss_function_id ==0: #mse loss, 2 numbers of full dataset
-            loss = torch.nn.functional.mse_loss(output,prepare_target(target))
+            loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)),prepare_target(target))
         if loss_function_id ==1: #sig loss
             if len(set(target)) == 2: #only 2 numbers
                 loss = significance_loss(target,output,False) #target preparation happens within significance loss
@@ -33,6 +33,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
 
         if cutoff == -1: #-1 means use defult of 0.5
             cutoff = 0.5
+            print("default otpion")
 
         for i in range(len(output)):
             if (output[i] > cutoff): # network thinks it is the signal

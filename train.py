@@ -7,7 +7,6 @@ from variables import *
 def train(network, optimizer, data,target, loss_function_id):
 
     network.train()
-    train_losses = []
     optimizer.zero_grad()
     output = torch.reshape(network(data), (-1,)) #query network and reshape output
 
@@ -26,7 +25,6 @@ def train(network, optimizer, data,target, loss_function_id):
             return "warning"
 
     loss.backward()
-    train_losses.append(loss.item())
     optimizer.step()
 
-    return train_losses
+    return loss.item()
