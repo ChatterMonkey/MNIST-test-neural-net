@@ -2,16 +2,12 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from net import Net
-from test_sigloss import test_sigloss
-from train_mse import train_mse
-from variables import *
-from train_sigloss import train_sigloss
-from train_even_sigloss import train_even_sigloss
-from even_test import even_test
+
 from loaders import test_loader
 import math
 from test_mse import test_mse
-
+#for batch, (data, target) in enumerate(train_loader):
+#    for batch, (data, target) in enumerate(test_loader):
 torch.backends.cudnn.enabled = False
 
 testing_with_full_data = True
