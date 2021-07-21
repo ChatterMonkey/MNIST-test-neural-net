@@ -52,6 +52,7 @@ def subset_data(data,target,background):
 
 
 
+
 def sig_loss(expectedSignal,expectedBackground):
     def sigloss(y_true,y_pred):
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers

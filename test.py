@@ -11,6 +11,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
     sample_output = 0 #this is for finding a good random seed number
     true_positive_count = 0 #number of times that the neural network correctly identified the signal
     false_positive_count = 0 #number of times the neural network misclassified backgroud as signal
+    print(target)
 
     with torch.no_grad():  #turn of gradient decent
         output = network(data) #query the neural network
@@ -18,13 +19,17 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
         if loss_function_id ==0: #mse loss, 2 numbers of full dataset
             loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)),prepare_target(target))
         if loss_function_id ==1: #sig loss
-            if len(set(target)) == 2: #only 2 numbers
+            target_length = torch.unique(target,True,False,False).shape[0]
+            if target_length == 2: #only 2 numbers
                 loss = significance_loss(target,output,False) #target preparation happens within significance loss
-            if len(set(target)) ==10: #full dataset
+            elif target_length == 10: #full dataset
+                print(target)
+                print(output)
                 loss = significance_loss(target,output,True) #target preparation happens within significance loss
             else:
                 print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
                 return "warning"
+        print(target)
 
         test_losses.append(loss.item())
 
@@ -37,15 +42,18 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
 
         for i in range(len(output)):
             if (output[i] > cutoff): # network thinks it is the signal
+                print(output[i])
                 output[i] = 1
-                if target[i] == signal:
+                print(output[i])
+                print(target[i])
+                if target[i] == 1:
                     true_positive_count += 1 #neural network correctly classified the signal
                     total_number_correct += 1 #network correctly identified signal
                 else:
                     false_positive_count += 1 #neural network thought the background was signal
             else:
                 output[i] = 0
-                if target[i] != signal:
+                if target[i] ==0:
                     total_number_correct += 1 #network correctly identified background
 
         if give_sample:

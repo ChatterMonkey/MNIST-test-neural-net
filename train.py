@@ -14,17 +14,23 @@ def train(network, optimizer, data,target, loss_function_id):
         target = prepare_target(target) #convert target into 1 for siganl and 0 for background
         loss = torch.nn.functional.mse_loss(output, target)
     if loss_function_id == 1:
-        if len(set(target)) == 2: #only 2 numbers
-            target = prepare_target(target)
+        #print(target)
+        target_length = torch.unique(target,True,False,False).shape[0]
+        #print(target_length)
+        if target_length == 2: #only 2 numbers
+
             loss = significance_loss(target,output,False) #target preparation happens within significance loss
-        if len(set(target)) ==10: #full dataset
-            target = prepare_target(target)
+        elif target_length ==10: #full dataset
+
             loss = significance_loss(target,output,True) #target preparation happens within significance loss
+
         else:
             print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
             return "warning"
 
     loss.backward()
     optimizer.step()
+
+
 
     return loss.item()
