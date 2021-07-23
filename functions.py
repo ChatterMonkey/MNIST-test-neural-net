@@ -24,7 +24,6 @@ def subset_data(data,target,background):
             len_subset += target_counts[1][i]
     #print(len_subset)
 
-
     data_subset = torch.zeros(len_subset,1,28,28)
     target_subset = torch.zeros(len_subset)
 
@@ -37,22 +36,6 @@ def subset_data(data,target,background):
     return data_subset,target_subset
 
 
-
-#data = torch.zeros(12,1,28,28)
-#for i in range(12):
-#    data_point = torch.full((1,28,28),i)
-#    data[i] = data_point
-#print(data[6])
-
-#data_subset,target_subset = subset_data(data, torch.tensor([1,2,4,6,7,8,4,2,3,4,7,7]),7)
-#print(data_subset)
-#print(target_subset)
-
-
-
-
-
-
 def sig_loss(expectedSignal,expectedBackground):
     def sigloss(y_true,y_pred):
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
@@ -62,6 +45,15 @@ def sig_loss(expectedSignal,expectedBackground):
         b = backgroundWeight*torch.sum(y_pred_rearanged*(1-y_true))
         return -(s*s)/(s+b+0.000001)
     return sigloss
+def sig_loss_invert(expectedSignal,expectedBackground):
+    def sigloss_invert(y_true,y_pred):
+        signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
+        backgroundWeight = expectedBackground/torch.sum(1-y_true)   #expected/actual background numbers
+        y_pred_rearanged = torch.reshape(y_pred,(-1,))
+        s = signalWeight*torch.sum(y_pred_rearanged*y_true)
+        b = backgroundWeight*torch.sum(y_pred_rearanged*(1-y_true))
+        return (s+b)/(s*s+ 0.000001)
+    return sigloss_invert
 
 
 def significance_loss(target,output,using_full_dataset):
@@ -71,6 +63,17 @@ def significance_loss(target,output,using_full_dataset):
         sigloss = sig_loss(len(target)/10,9*len(target)/10)
     else:
         sigloss = sig_loss(len(target)/10,len(target)/10)
+
+    loss = sigloss(target,output)
+    return loss
+
+def significance_loss_invert(target,output,using_full_dataset):
+    target = prepare_target(target)
+
+    if using_full_dataset:
+        sigloss = sig_loss_invert(len(target)/10,9*len(target)/10)
+    else:
+        sigloss = sig_loss_invert(len(target)/10,len(target)/10)
 
     loss = sigloss(target,output)
     return loss

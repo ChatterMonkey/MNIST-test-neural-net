@@ -14,7 +14,7 @@ import os
 torch.backends.cudnn.enabled = False
 
 using_full_data = True
-loss_function_ids = {"Mean Squared Error":0,"Significance Loss":1,"Binery Cross Entropy":2}
+loss_function_ids = {0:"Mean Squared Error",1:"Significance Loss",2:"Binery Cross Entropy",3:"Inverted Significance Loss"}
 
 
 
@@ -111,10 +111,10 @@ def train_and_test(loss_function_id,experiment_name):
     if loss_function_id == 1:
         for i in range(len(test_loss_list)):
             significances.append(math.sqrt(-1 * test_loss_list[i][0]))
-    elif loss_function_id ==0:
+    else:
         print("using seperate sig evaluation")
         for i in range(len(tp)):
-            significances.append(tp[i]/math.sqrt(tp[i] + fp[i]))
+            significances.append(tp[i]/math.sqrt(tp[i] + fp[i] + 0.00000001))
 
 
 
@@ -140,9 +140,13 @@ def train_and_test(loss_function_id,experiment_name):
 
 
 
+    if using_full_data:
+        title = str(loss_function_ids[loss_function_id]) + " with full dataset for " + str(n_epochs) + " epochs"
+    else:
+        title = str(loss_function_ids[loss_function_id]) + " with partial dataset for " + str(n_epochs) + " epochs"
 
-    plt.suptitle(str(experiment_name), fontdict = font1)
+    plt.suptitle(str(title),fontdict = font1)
     plt.savefig(loss_graph_filepath)
 
 
-train_and_test(1,"test3")
+train_and_test(0,"mse_40_full")
