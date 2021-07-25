@@ -11,7 +11,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
     sample_output = 0 #this is for finding a good random seed number
     true_positive_count = 0 #number of times that the neural network correctly identified the signal
     false_positive_count = 0 #number of times the neural network misclassified backgroud as signal
-    print(target)
+
 
     with torch.no_grad():  #turn of gradient decent
         output = network(data) #query the neural network
@@ -23,8 +23,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
             if target_length == 2: #only 2 numbers
                 loss = significance_loss(target,output,False) #target preparation happens within significance loss
             elif target_length == 10: #full dataset
-                print(target)
-                print(output)
+
                 loss = significance_loss(target,output,True) #target preparation happens within significance loss
             else:
                 print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
@@ -36,7 +35,6 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
             return "LOSS FUNCTION ID NOT VAID"
 
 
-        print(target)
 
         test_losses.append(loss.item())
 
@@ -45,14 +43,13 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
 
         if cutoff == -1: #-1 means use defult of 0.5
             cutoff = 0.5
-            #print("default otpion")
+
 
         for i in range(len(output)):
             if (output[i] > cutoff): # network thinks it is the signal
-                #print(output[i])
+
                 output[i] = 1
-                #print(output[i])
-                #print(target[i])
+
                 if target[i] == 1:
                     true_positive_count += 1 #neural network correctly classified the signal
                     total_number_correct += 1 #network correctly identified signal
