@@ -19,7 +19,7 @@ from collections import namedtuple
 using_full_data = False
 loss_function_id = 1
 lr = 0.001
-n_epochs = 2
+n_epochs = 15
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
@@ -95,9 +95,9 @@ def file_check(path):
 
 def train_and_test(suffix = ""):
     if using_full_data:
-        status = "partial"
-    else:
         status = "full"
+    else:
+        status = "partial"
     if use_auto_stop:
         experiment_name = loss_function_tuple[loss_function_id][1] + "_auto_" + status + "_" + str(variables.learning_rate).replace(".","_") + str(suffix)
     else:
