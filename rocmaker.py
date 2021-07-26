@@ -55,19 +55,3 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id,using_full_data
     return true_positive_rates,false_positive_rates
 
 
-
-def plot_roc(true_positive_rates,false_positive_rate,filepath):
-
-    plt.plot(false_positive_rate,true_positive_rates)
-    plt.ylabel('True Positive Rate')
-    plt.xlabel('False Positive Rate')
-    for i in range(0,len(cutoffs)):
-        plt.annotate(xy=[false_positive_rate[i],true_positive_rates[i]], s=cutoffs[i])
-    plt.savefig(filepath)
-    return
-
-
-
-cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
-
-network = load_network("/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/neuralnets/sl_80_full_001.pth")

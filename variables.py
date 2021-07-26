@@ -1,7 +1,7 @@
 
 
 class variable_list:
-    def __init__(self,n_epochs,lr):
+    def __init__(self):
         self.signal = 4
         self.background = 7
         self.train_batch_size = 4000
@@ -12,8 +12,12 @@ class variable_list:
         self.log_interval = 5 #how often to log while training
         self.random_seed = 7
 
-        self.n_epochs = n_epochs
+        self.n_epochs = None
+        self.learning_rate = None
+
+    def set_lr(self,lr):
         self.learning_rate = lr
+    def set_n_epochs(self,n_epochs):
+        self.n_epochs = n_epochs
 
-
-variables = variable_list(3,0.001)
+variables = variable_list()

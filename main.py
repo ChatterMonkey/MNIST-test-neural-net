@@ -2,7 +2,7 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from net import Net
-from variables import variable_list
+from variables import variables
 from train import train
 from test import test
 from loaders import test_loader,train_loader
@@ -19,10 +19,11 @@ from collections import namedtuple
 using_full_data = False
 loss_function_id = 1
 lr = 0.001
-n_epochs = 3
+n_epochs = 2
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
-variables = variable_list(n_epochs,lr)
+variables.set_lr(lr)
+variables.set_n_epochs(n_epochs)
 
 
 
@@ -113,9 +114,9 @@ def train_and_test(suffix = ""):
         print("quit to protect network file")
         return "quit to protect loss graph"
     if use_auto_stop:
-        print("training until {}% acuracy with {}...".format(required_accuracy*100,loss_function_tuple[loss_function_id][0]))
+        print("training until {}% acuracy with {}, lr = {}...".format(required_accuracy*100,loss_function_tuple[loss_function_id][0],variables.learning_rate))
     else:
-        print("training for {} epochs with {}...".format(variables.n_epochs,loss_function_tuple[loss_function_id][0]))
+        print("training for {} epochs with {}, lr = {}...".format(variables.n_epochs,loss_function_tuple[loss_function_id][0],variables.learning_rate))
 
     network, optimizer = initilize()
     test_loss_list = []
@@ -216,12 +217,13 @@ def train_and_test(suffix = ""):
     else:
         num_epochs = variables.n_epochs
     if using_full_data:
-        title = str(loss_function_tuple[loss_function_id][0]) + " with full dataset for " + str(num_epochs) + " epochs"
+        title = str(loss_function_tuple[loss_function_id][0]) + " with full dataset for " + str(num_epochs) + " epochs, " + "lr = " + str(variables.learning_rate)
     else:
-        title = str(loss_function_tuple[loss_function_id][0]) + " with partial dataset for " + str(num_epochs) + " epochs"
+        title = str(loss_function_tuple[loss_function_id][0]) + " with partial dataset for " + str(num_epochs) + " epochs, " + "lr = " + str(variables.learning_rate)
 
     plt.suptitle(str(title),fontdict = font2)
     plt.savefig(loss_graph_filepath)
+
 
 
 train_and_test() #optional suffix adds onto the end of the experiment name

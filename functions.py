@@ -57,6 +57,7 @@ def sig_loss_invert(expectedSignal,expectedBackground):
 
 
 def significance_loss(target,output,using_full_dataset):
+
     target = prepare_target(target)
 
     if using_full_dataset:
