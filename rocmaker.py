@@ -1,11 +1,10 @@
 
 
-
+from variables import variables
 from functions import subset_data
 import torch
 from test import test
 from net import Net
-from variables import *
 import matplotlib.pyplot as plt
 from loaders import test_loader
 
@@ -44,7 +43,7 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id,using_full_data
 
     false_positive_rates = []
     true_positive_rates = []
-    background_count = mnist_test_size*9/10
+    background_count = variables.mnist_test_size*9/10
     if not using_full_dataset:
         background_count = background_count/10
     for i in range(len(false_positives)):

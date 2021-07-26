@@ -1,10 +1,10 @@
 import torch
-from variables import signal
+from variables import variables
 
 
 def prepare_target(target):
     for i in range(len(target)):
-        if target[i].item() == signal: #prepare target
+        if target[i].item() == variables.signal: #prepare target
             target[i] = 1
         else:
             target[i] = 0
@@ -20,7 +20,7 @@ def subset_data(data,target,background):
         print("SUSPICOUS OCURRENCE, not all numbers are present in the data") #possibly becasue the batch size is just small
 
     for i in range(target_counts[0].shape[0]): #find where the signal and background are
-        if target_counts[0][i] == signal or target_counts[0][i] == background:
+        if target_counts[0][i] == variables.signal or target_counts[0][i] == background:
             len_subset += target_counts[1][i]
     #print(len_subset)
 
@@ -29,7 +29,7 @@ def subset_data(data,target,background):
 
     i =0
     for j in range(target.shape[0]):
-        if target[j] == signal or target[j] == background:
+        if target[j] == variables.signal or target[j] == background:
             data_subset[i] = data[j]
             target_subset[i] = target[j]
             i += 1

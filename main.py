@@ -2,7 +2,7 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from net import Net
-from variables import *
+from variables import variable_list
 from train import train
 from test import test
 from loaders import test_loader,train_loader
@@ -13,12 +13,22 @@ from rocmaker import calculate_roc_curve_points
 from collections import namedtuple
 #for batch, (data, target) in enumerate(train_loader):
 #    for batch, (data, target) in enumerate(test_loader):
-torch.backends.cudnn.enabled = False
+
+
 
 using_full_data = False
+loss_function_id = 1
+lr = 0.001
+n_epochs = 3
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
-required_accuracy = 0.99
 
+variables = variable_list(n_epochs,lr)
+
+
+
+required_accuracy = 0.99
+torch.backends.cudnn.enabled = False
+#warning, isl not yet implemented
 loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"),("InvertedSignificanceLoss","isl"))
 
 
@@ -28,9 +38,9 @@ loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("Bi
 # how to use: set using_full_data to true or false, then pick the loss function id and nubmer of epcohs
 
 def initilize():
-    torch.manual_seed(random_seed)
+    torch.manual_seed(variables.random_seed)
     network = Net()
-    optimizer = optim.SGD(network.parameters(), lr=learning_rate, momentum=momentum)
+    optimizer = optim.SGD(network.parameters(), lr=variables.learning_rate, momentum=variables.momentum)
     return network, optimizer
 
 
@@ -40,7 +50,7 @@ def run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,
 
     for batch, (data, target) in enumerate(train_loader):
         if using_full_data == False:
-            data,target = subset_data(data,target,background)
+            data,target = subset_data(data,target,variables.background)
         loss = train(network,optimizer,data,target,loss_function_id)
         train_loss_list.append(loss)
 
@@ -53,7 +63,7 @@ def run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,
 
     for batch, (data, target) in enumerate(test_loader):
         if using_full_data == False:
-            data,target = subset_data(data,target,background)
+            data,target = subset_data(data,target,variables.background)
         test_losses,batch_number_correct,batch_true_positive_count,batch_false_positive_count = test(network, data,target,loss_function_id)
         test_loss_list.append(test_losses)
         total_number += target.shape[0]
@@ -65,9 +75,9 @@ def run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,
     tp.append(true_positive_count)
 
     if using_full_data:
-        print("Total number correct :{} ({}%) False positives:{} True Positives{}".format(total_number_correct,100*total_number_correct/mnist_test_size,false_positive_count,true_positive_count))
+        print("Total number correct :{} ({}%) False positives:{} True Positives{}".format(total_number_correct,100*total_number_correct/variables.mnist_test_size,false_positive_count,true_positive_count))
     else:
-        print("Total number correct :{} ({}%) False positives:{} True Positives{}".format(total_number_correct,100*total_number_correct/(mnist_test_size/5),false_positive_count,true_positive_count))
+        print("Total number correct :{} ({}%) False positives:{} True Positives{}".format(total_number_correct,100*total_number_correct/(variables.mnist_test_size/5),false_positive_count,true_positive_count))
     return network, optimizer, train_loss_list,test_loss_list,total_number_correct,tp,fp
 
 def file_check(path):
@@ -82,16 +92,15 @@ def file_check(path):
         return True
 
 
-def train_and_test(loss_function_id,suffix = ""):
-
+def train_and_test(suffix = ""):
     if using_full_data:
         status = "partial"
     else:
         status = "full"
     if use_auto_stop:
-        experiment_name = loss_function_tuple[loss_function_id][1] + "_auto_" + status + "_" + str(learning_rate).replace(".","_") + str(suffix)
+        experiment_name = loss_function_tuple[loss_function_id][1] + "_auto_" + status + "_" + str(variables.learning_rate).replace(".","_") + str(suffix)
     else:
-        experiment_name = loss_function_tuple[loss_function_id][1] + "_"+ str(n_epochs) +"_" + status + "_" + str(learning_rate).replace(".","_") + str(suffix)
+        experiment_name = loss_function_tuple[loss_function_id][1] + "_"+ str(variables.n_epochs) +"_" + status + "_" + str(variables.learning_rate).replace(".","_") + str(suffix)
     print("Experiment Name: {}".format(experiment_name))
 
     loss_graph_filepath = "loss_graphs/"  + str(experiment_name) + ".png"
@@ -106,7 +115,7 @@ def train_and_test(loss_function_id,suffix = ""):
     if use_auto_stop:
         print("training until {}% acuracy with {}...".format(required_accuracy*100,loss_function_tuple[loss_function_id][0]))
     else:
-        print("training for {} epochs with {}...".format(n_epochs,loss_function_tuple[loss_function_id][0]))
+        print("training for {} epochs with {}...".format(variables.n_epochs,loss_function_tuple[loss_function_id][0]))
 
     network, optimizer = initilize()
     test_loss_list = []
@@ -115,7 +124,7 @@ def train_and_test(loss_function_id,suffix = ""):
     fp = []
     tp = []
     if not use_auto_stop:
-        for epoch in range(1, n_epochs + 1):
+        for epoch in range(1, variables.n_epochs + 1):
             print("Epoch number {}".format(epoch))
             network, optimizer, train_loss_list,test_loss_list,correct_per_epoch,tp,fp = run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,fp,tp)
             correct.append(correct_per_epoch)
@@ -127,9 +136,9 @@ def train_and_test(loss_function_id,suffix = ""):
             print("Epoch number {}".format(epoch))
             network, optimizer, train_loss_list,test_loss_list,correct_per_epoch,tp,fp = run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,fp,tp)
             if using_full_data:
-                accuracy = correct_per_epoch/mnist_test_size
+                accuracy = correct_per_epoch/variables.mnist_test_size
             else:
-                accuracy = correct_per_epoch/(mnist_test_size/5)
+                accuracy = correct_per_epoch/(variables.mnist_test_size/5)
             correct.append(correct_per_epoch)
 
 
@@ -137,7 +146,7 @@ def train_and_test(loss_function_id,suffix = ""):
     torch.save(network.state_dict(), nn_filepath)
     plt.figure(figsize=(20,20))
     font1 = {'size':10}
-    font2 = {'size':20}
+    font2 = {'size':40}
 
     plt.subplot(4, 2, 1)
     plt.title("Training", fontdict = font1)
@@ -177,9 +186,9 @@ def train_and_test(loss_function_id,suffix = ""):
     plt.ylabel("percent accuracy", fontdict = font1)
     for i in range(len(correct)):
         if using_full_data:
-            correct[i] = 100*correct[i]/mnist_test_size
+            correct[i] = 100*correct[i]/variables.mnist_test_size
         else:
-            correct[i] = 100*correct[i]/(mnist_test_size/5)
+            correct[i] = 100*correct[i]/(variables.mnist_test_size/5)
     plt.plot(correct)
 
 
@@ -205,7 +214,7 @@ def train_and_test(loss_function_id,suffix = ""):
     if use_auto_stop:
         num_epochs  = epoch
     else:
-        num_epochs = n_epochs
+        num_epochs = variables.n_epochs
     if using_full_data:
         title = str(loss_function_tuple[loss_function_id][0]) + " with full dataset for " + str(num_epochs) + " epochs"
     else:
@@ -215,5 +224,5 @@ def train_and_test(loss_function_id,suffix = ""):
     plt.savefig(loss_graph_filepath)
 
 
-train_and_test(2) #optional suffix adds onto the end of the experiment name
+train_and_test() #optional suffix adds onto the end of the experiment name
 

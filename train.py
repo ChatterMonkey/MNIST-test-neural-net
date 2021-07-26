@@ -1,8 +1,7 @@
 import torch
 import torch.nn.functional
 from functions import significance_loss,prepare_target
-from loaders import train_loader
-from variables import *
+
 
 def train(network, optimizer, data,target, loss_function_id):
 

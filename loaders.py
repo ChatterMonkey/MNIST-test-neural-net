@@ -1,6 +1,6 @@
 import torch
 import torchvision
-from variables import *
+from variables import variables
 
 train_loader = torch.utils.data.DataLoader(
   torchvision.datasets.MNIST('/Users/mayabasu/pytorchdatasets', train=True, download=True,
@@ -9,7 +9,7 @@ train_loader = torch.utils.data.DataLoader(
                                torchvision.transforms.Normalize(
                                  (0.1307,), (0.3081,))
                              ])),
-  batch_size=train_batch_size, shuffle=True)
+  batch_size=variables.train_batch_size, shuffle=True)
 
 test_loader = torch.utils.data.DataLoader(
   torchvision.datasets.MNIST('/Users/mayabasu/pytorchdatasets', train=False, download=True,
@@ -18,4 +18,4 @@ test_loader = torch.utils.data.DataLoader(
                                torchvision.transforms.Normalize(
                                  (0.1307,), (0.3081,))
                              ])),
-  batch_size=test_batch_size, shuffle=True)
+  batch_size=variables.test_batch_size, shuffle=True)
