@@ -16,11 +16,11 @@ from collections import namedtuple
 
 
 
-using_full_data = False
-loss_function_id = 1
-lr = 0.001
+using_full_data = True
+loss_function_id = 0
+lr = 0.01
 n_epochs = 15
-use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
+use_auto_stop = True # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
 variables.set_n_epochs(n_epochs)
