@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional
-from functions import significance_loss,prepare_target
+from functions import significance_loss,prepare_target,modified_significance_loss
 
 
 def train(network, optimizer, data,target, loss_function_id):
@@ -28,6 +28,19 @@ def train(network, optimizer, data,target, loss_function_id):
             return "warning"
     elif loss_function_id == 2: #binery cross entropy
             loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
+    elif loss_function_id ==3:
+        target_length = torch.unique(target,True,False,False).shape[0]
+        #print(target_length)
+        if target_length == 2: #only 2 numbers
+
+            loss = modified_significance_loss(target,output,False) #target preparation happens within significance loss
+        elif target_length ==10: #full dataset
+
+            loss = modified_significance_loss(target,output,True) #target preparation happens within significance loss
+
+        else:
+            print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
+            return "warning"
     else:
         print("LOSS FUNCTION ID NOT VAID")
         return "LOSS FUNCTION ID NOT VAID"

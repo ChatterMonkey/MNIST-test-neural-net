@@ -45,15 +45,16 @@ def sig_loss(expectedSignal,expectedBackground):
         b = backgroundWeight*torch.sum(y_pred_rearanged*(1-y_true))
         return -(s*s)/(s+b+0.000001)
     return sigloss
-def sig_loss_invert(expectedSignal,expectedBackground):
-    def sigloss_invert(y_true,y_pred):
+
+def mod_sigloss(expectedSignal,expectedBackground):
+    def mod_sigloss(y_true,y_pred):
         signalWeight = expectedSignal/torch.sum(y_true)    #expected/actual signal numbers
         backgroundWeight = expectedBackground/torch.sum(1-y_true)   #expected/actual background numbers
         y_pred_rearanged = torch.reshape(y_pred,(-1,))
         s = signalWeight*torch.sum(y_pred_rearanged*y_true)
         b = backgroundWeight*torch.sum(y_pred_rearanged*(1-y_true))
-        return (s+b)/(s*s+ 0.000001)
-    return sigloss_invert
+        return -(s*s)
+    return mod_sigloss
 
 
 def significance_loss(target,output,using_full_dataset):
@@ -68,13 +69,14 @@ def significance_loss(target,output,using_full_dataset):
     loss = sigloss(target,output)
     return loss
 
-def significance_loss_invert(target,output,using_full_dataset):
+
+def modified_significance_loss(target,output,using_full_dataset):
     target = prepare_target(target)
 
     if using_full_dataset:
-        sigloss = sig_loss_invert(len(target)/10,9*len(target)/10)
+        sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
     else:
-        sigloss = sig_loss_invert(len(target)/10,len(target)/10)
+        sigloss = mod_sigloss(len(target)/10,len(target)/10)
 
     loss = sigloss(target,output)
     return loss

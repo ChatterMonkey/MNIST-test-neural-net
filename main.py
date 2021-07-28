@@ -17,10 +17,10 @@ from collections import namedtuple
 
 
 using_full_data = True
-loss_function_id = 0
-lr = 0.01
-n_epochs = 15
-use_auto_stop = True # automaticallly stop when accuracy rises above  the required acuracy
+loss_function_id = 2
+lr = 0.1
+n_epochs = 200
+use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
 variables.set_n_epochs(n_epochs)
@@ -30,7 +30,7 @@ variables.set_n_epochs(n_epochs)
 required_accuracy = 0.99
 torch.backends.cudnn.enabled = False
 #warning, isl not yet implemented
-loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"),("InvertedSignificanceLoss","isl"))
+loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"),("ModifiedSignificanceLoss","msl"))
 
 
 #print(loss_function_tuple)
@@ -45,9 +45,7 @@ def initilize():
     return network, optimizer
 
 
-
 def run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,fp,tp):
-
 
     for batch, (data, target) in enumerate(train_loader):
         if using_full_data == False:
@@ -80,6 +78,7 @@ def run_epoch(network,optimizer,loss_function_id,train_loss_list,test_loss_list,
     else:
         print("Total number correct :{} ({}%) False positives:{} True Positives{}".format(total_number_correct,100*total_number_correct/(variables.mnist_test_size/5),false_positive_count,true_positive_count))
     return network, optimizer, train_loss_list,test_loss_list,total_number_correct,tp,fp
+
 
 def file_check(path):
     if os.path.exists(path):
@@ -163,6 +162,7 @@ def train_and_test(suffix = ""):
     plt.plot(test_loss_list)
 
 
+
     significances = []
     if loss_function_id == 1:
         for i in range(len(test_loss_list)):
@@ -205,11 +205,26 @@ def train_and_test(suffix = ""):
     plt.xlabel("False Positive Rate", fontdict = font1)
     plt.ylabel("True Positive Rate", fontdict = font1)
 
+
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+
 
     true_positive_rates,false_positive_rates = calculate_roc_curve_points(cutoffs,network,loss_function_id,using_full_data)
 
     plt.plot(false_positive_rates,true_positive_rates)
+
+    plt.subplot(4,2,7)
+    table_data=[
+    ["Final Significance", round(significances[-1],4)],
+    ["Final Training Loss", round(train_loss_list[-1],4)],
+    ["Final Test Loss", round(test_loss_list[-1][0],4)],
+    ["Final accuracy",correct[-1]]]
+
+    #create table
+    table = plt.table(cellText=table_data, loc='center')
+
+
+
 
 
     if use_auto_stop:
@@ -226,5 +241,5 @@ def train_and_test(suffix = ""):
 
 
 
-train_and_test() #optional suffix adds onto the end of the experiment name
+train_and_test("") #optional suffix adds onto the end of the experiment name
 
