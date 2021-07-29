@@ -2,9 +2,12 @@ import torch
 import torch.nn.functional
 from functions import significance_loss,prepare_target,modified_significance_loss
 
-def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False): #set cutoff to -1 for no cutoff, optional variable
+def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False, evaluate_loss = True): #set cutoff to -1 for no cutoff, optional variable
+    if loss_function_id == -1:
+        evaluate_loss = False
     print("cutoff is {}".format(cutoff))
     network.eval()   #turn off drop off layers etc. for testing
+
     test_losses = []
     total_number_correct = 0
     sample_output = 0 #this is for finding a good random seed number
@@ -15,40 +18,43 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False):
     with torch.no_grad():  #turn of gradient decent
         output = network(data) #query the neural network
 
-        if loss_function_id ==0: #mse loss, 2 numbers of full dataset
-            loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)),prepare_target(target))
-        elif loss_function_id ==1: #sig loss
-            target_length = torch.unique(target,True,False,False).shape[0]
-            if target_length == 2: #only 2 numbers
-                loss = significance_loss(target,output,False) #target preparation happens within significance loss
-            elif target_length == 10: #full dataset
+        if evaluate_loss:
+            if loss_function_id ==-1: #this shouldn't happend
+                print("ERROR! attempted to run testing with null loss function but neglected to set evaluate_loss=False")
+                return "error"
 
-                loss = significance_loss(target,output,True) #target preparation happens within significance loss
+            elif loss_function_id ==0: #mse loss, 2 numbers of full dataset
+                loss = torch.nn.functional.mse_loss(torch.reshape(output,(-1,)),prepare_target(target))
+            elif loss_function_id ==1: #sig loss
+                target_length = torch.unique(target,True,False,False).shape[0]
+                if target_length == 2: #only 2 numbers
+                    loss = significance_loss(target,output,False) #target preparation happens within significance loss
+                elif target_length == 10: #full dataset
+
+                    loss = significance_loss(target,output,True) #target preparation happens within significance loss
+                else:
+                    print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
+                    return "warning"
+            elif loss_function_id == 2: #binery cross entropy
+                loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
+            elif loss_function_id ==3:
+                target_length = torch.unique(target,True,False,False).shape[0]
+                #print(target_length)
+                if target_length == 2: #only 2 numbers
+
+                    loss = modified_significance_loss(target,output,False) #target preparation happens within significance loss
+                elif target_length ==10: #full dataset
+
+                    loss = modified_significance_loss(target,output,True) #target preparation happens within significance loss
+
+                else:
+                    print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
+                    return "warning"
             else:
-                print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
-                return "warning"
-        elif loss_function_id == 2: #binery cross entropy
-            loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
-        elif loss_function_id ==3:
-            target_length = torch.unique(target,True,False,False).shape[0]
-            #print(target_length)
-            if target_length == 2: #only 2 numbers
+                print("LOSS FUNCTION ID NOT VAID")
+                return "LOSS FUNCTION ID NOT VAID"
 
-                loss = modified_significance_loss(target,output,False) #target preparation happens within significance loss
-            elif target_length ==10: #full dataset
-
-                loss = modified_significance_loss(target,output,True) #target preparation happens within significance loss
-
-            else:
-                print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
-                return "warning"
-        else:
-            print("LOSS FUNCTION ID NOT VAID")
-            return "LOSS FUNCTION ID NOT VAID"
-
-
-
-        test_losses.append(loss.item())
+            test_losses.append(loss.item())
 
         if give_sample:
             sample_output = output #store a sample output for finding a good seed
