@@ -1,5 +1,4 @@
 
-
 class variable_list:
     def __init__(self):
         self.signal = 4

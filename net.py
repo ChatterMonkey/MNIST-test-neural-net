@@ -22,7 +22,7 @@ class Net(nn.Module):
         #print(x)
         #print("outputs")
         #for i in range(10):
-         #   print(torch.sigmoid(x)[i])
+        #   print(torch.sigmoid(x)[i])
 
         #print("queried")
         return torch.sigmoid(x)

@@ -19,7 +19,7 @@ from collections import namedtuple
 using_full_data = True
 loss_function_id = 2
 lr = 0.1
-n_epochs = 200
+n_epochs = 0
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
@@ -30,7 +30,7 @@ variables.set_n_epochs(n_epochs)
 required_accuracy = 0.99
 torch.backends.cudnn.enabled = False
 #warning, isl not yet implemented
-loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"),("ModifiedSignificanceLoss","msl"))
+loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BinaryCrossEntropy","bce"),("ModifiedSignificanceLoss","msl"))
 
 
 #print(loss_function_tuple)
@@ -215,10 +215,10 @@ def train_and_test(suffix = ""):
 
     plt.subplot(4,2,7)
     table_data=[
-    ["Final Significance", round(significances[-1],4)],
-    ["Final Training Loss", round(train_loss_list[-1],4)],
-    ["Final Test Loss", round(test_loss_list[-1][0],4)],
-    ["Final accuracy",correct[-1]]]
+        ["Final Significance", round(significances[-1],4)],
+        ["Final Training Loss", round(train_loss_list[-1],4)],
+        ["Final Test Loss", round(test_loss_list[-1][0],4)],
+        ["Final accuracy",correct[-1]]]
 
     #create table
     table = plt.table(cellText=table_data, loc='center')
@@ -242,4 +242,3 @@ def train_and_test(suffix = ""):
 
 
 train_and_test("") #optional suffix adds onto the end of the experiment name
-

@@ -15,9 +15,6 @@ def load_network(path):
     return network
 
 
-
-
-
 def calculate_roc_curve_points(cutoffs, network,loss_function_id,using_full_dataset):
 
     false_positives = []
