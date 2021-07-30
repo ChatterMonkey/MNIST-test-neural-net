@@ -17,9 +17,9 @@ from collections import namedtuple
 
 
 using_full_data = True
-loss_function_id = 2
+loss_function_id = 3
 lr = 0.1
-n_epochs = 200
+n_epochs = 1
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)

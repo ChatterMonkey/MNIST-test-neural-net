@@ -53,7 +53,7 @@ def mod_sigloss(expectedSignal,expectedBackground):
         y_pred_rearanged = torch.reshape(y_pred,(-1,))
         s = signalWeight*torch.sum(y_pred_rearanged*y_true)
         b = backgroundWeight*torch.sum(y_pred_rearanged*(1-y_true))
-        return -(s*s)
+        return -(s*s)/(s+b+0.000001)
     return mod_sigloss
 
 
@@ -74,9 +74,11 @@ def modified_significance_loss(target,output,using_full_dataset):
     target = prepare_target(target)
 
     if using_full_dataset:
-        sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
+        #sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
+        sigloss = mod_sigloss(1,9)
     else:
-        sigloss = mod_sigloss(len(target)/10,len(target)/10)
+        #sigloss = mod_sigloss(len(target)/10,len(target)/10)
+        sigloss = mod_sigloss(1,1)
 
     loss = sigloss(target,output)
     return loss
