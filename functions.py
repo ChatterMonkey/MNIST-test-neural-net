@@ -75,7 +75,7 @@ def modified_significance_loss(target,output,using_full_dataset):
 
     if using_full_dataset:
         #sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
-        sigloss = mod_sigloss(1,9)
+        sigloss = mod_sigloss(1,90)
     else:
         #sigloss = mod_sigloss(len(target)/10,len(target)/10)
         sigloss = mod_sigloss(1,1)
