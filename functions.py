@@ -73,10 +73,16 @@ def significance_loss(target,output,using_full_dataset):
 def modified_significance_loss(target,output,using_full_dataset):
     target = prepare_target(target)
 
+
+    exp_signal = 1
+    exp_bkgd = 900
+
     if using_full_dataset:
-        sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
+        exp_bkgd = 9*len(target)/10
+        sigloss = sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
     else:
-        sigloss = mod_sigloss(len(target)/10,len(target)/10)
+        exp_bkgd = 9*len(target)/10
+        sigloss = sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
 
     loss = sigloss(target,output)
     return loss
