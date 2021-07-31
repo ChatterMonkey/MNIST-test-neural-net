@@ -18,8 +18,8 @@ from collections import namedtuple
 
 using_full_data = True
 loss_function_id = 3
-lr = 0.1
-n_epochs = 1
+lr = 0.001
+n_epochs = 200
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
@@ -41,6 +41,10 @@ loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("Bi
 def initilize():
     torch.manual_seed(variables.random_seed)
     network = Net()
+
+    #net_params = torch.load('neuralnets/mse_150_full_0_1.pth')
+    #network = Net()
+    #network.load_state_dict(net_params)
     optimizer = optim.SGD(network.parameters(), lr=variables.learning_rate, momentum=variables.momentum)
     return network, optimizer
 
@@ -241,5 +245,5 @@ def train_and_test(suffix = ""):
 
 
 
-train_and_test("") #optional suffix adds onto the end of the experiment name
+train_and_test("_90") #optional suffix adds onto the end of the experiment name
 
