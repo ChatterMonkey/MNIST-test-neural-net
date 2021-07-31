@@ -27,7 +27,7 @@ def train(network, optimizer, data,target, loss_function_id):
             print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity
             return "warning"
     elif loss_function_id == 2: #binery cross entropy
-            loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
+        loss = torch.nn.functional.binary_cross_entropy(torch.reshape(output,(-1,)),prepare_target(target))
     elif loss_function_id ==3:
         target_length = torch.unique(target,True,False,False).shape[0]
         #print(target_length)
@@ -47,7 +47,5 @@ def train(network, optimizer, data,target, loss_function_id):
 
     loss.backward()
     optimizer.step()
-
-
 
     return loss.item()
