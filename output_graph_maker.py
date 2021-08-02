@@ -1,6 +1,6 @@
 from functions import subset_data, prepare_target
-from loaders import test_loader
-from variables import variables
+from mnist.loaders import test_loader
+from mnist_variables import variables
 import matplotlib.pyplot as plt
 from net import Net
 import torch

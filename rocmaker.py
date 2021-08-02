@@ -1,12 +1,11 @@
 
 
-from variables import variables
+from mnist_variables import variables
 from functions import subset_data
 import torch
 from test import test
 from net import Net
-import matplotlib.pyplot as plt
-from loaders import test_loader
+from mnist.loaders import test_loader
 
 def load_network(path):
     network_state = torch.load(path)

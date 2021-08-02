@@ -1,6 +1,7 @@
 
 class variable_list:
     def __init__(self):
+        self.network_input_size = 10
         self.signal = 4
         self.background = 7
         self.train_batch_size = 4000

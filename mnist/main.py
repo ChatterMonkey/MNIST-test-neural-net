@@ -1,22 +1,18 @@
-from typing import List, Any, Union
-
 import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from net import Net
-from variables import variables
+from mnist_variables import variables
 from train import train
 from test import test
-from loaders import test_loader,train_loader
+from mnist.loaders import test_loader,train_loader
 from functions import subset_data
 import math
 import os
 from rocmaker import calculate_roc_curve_points
-from collections import namedtuple
+
 #for batch, (data, target) in enumerate(train_loader):
 #    for batch, (data, target) in enumerate(test_loader):
-#test
-#test2
 
 
 using_full_data = True
@@ -216,7 +212,7 @@ def train_and_test(suffix = ""):
 
     plt.subplot(4,2,7)
 
-    table_data:[
+    table_data = [
     ["Final Significance", round(significances[-1],4)],
     ["Final Training Loss", round(train_loss_list[-1],4)],
     ["Final Test Loss", round(test_loss_list[-1][0],4)],
