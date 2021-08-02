@@ -17,9 +17,9 @@ from collections import namedtuple
 
 
 using_full_data = True
-loss_function_id = 3
-lr = 0.001
-n_epochs = 200
+loss_function_id = 2
+lr = 0.1
+n_epochs = 0
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
@@ -41,10 +41,6 @@ loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("Bi
 def initilize():
     torch.manual_seed(variables.random_seed)
     network = Net()
-
-    #net_params = torch.load('neuralnets/mse_150_full_0_1.pth')
-    #network = Net()
-    #network.load_state_dict(net_params)
     optimizer = optim.SGD(network.parameters(), lr=variables.learning_rate, momentum=variables.momentum)
     return network, optimizer
 
@@ -209,9 +205,7 @@ def train_and_test(suffix = ""):
     plt.xlabel("False Positive Rate", fontdict = font1)
     plt.ylabel("True Positive Rate", fontdict = font1)
 
-
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
-
 
     true_positive_rates,false_positive_rates = calculate_roc_curve_points(cutoffs,network,loss_function_id,using_full_data)
 
@@ -227,12 +221,8 @@ def train_and_test(suffix = ""):
     #create table
     table = plt.table(cellText=table_data, loc='center')
 
-
-
-
-
     if use_auto_stop:
-        num_epochs  = epoch
+        num_epochs = epoch
     else:
         num_epochs = variables.n_epochs
     if using_full_data:
@@ -245,5 +235,5 @@ def train_and_test(suffix = ""):
 
 
 
-train_and_test("_90") #optional suffix adds onto the end of the experiment name
+train_and_test("") #optional suffix adds onto the end of the experiment name
 
