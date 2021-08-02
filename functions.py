@@ -73,7 +73,6 @@ def significance_loss(target,output,using_full_dataset):
 def modified_significance_loss(target,output,using_full_dataset):
     target = prepare_target(target)
 
-
     exp_signal = 1
     exp_bkgd = 900
 

@@ -1,3 +1,5 @@
+from typing import List, Any, Union
+
 import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
@@ -14,6 +16,7 @@ from collections import namedtuple
 #for batch, (data, target) in enumerate(train_loader):
 #    for batch, (data, target) in enumerate(test_loader):
 #test
+#test2
 
 
 using_full_data = True
@@ -212,13 +215,13 @@ def train_and_test(suffix = ""):
     plt.plot(false_positive_rates,true_positive_rates)
 
     plt.subplot(4,2,7)
-    table_data=[
+
+    table_data:[
     ["Final Significance", round(significances[-1],4)],
     ["Final Training Loss", round(train_loss_list[-1],4)],
     ["Final Test Loss", round(test_loss_list[-1][0],4)],
     ["Final accuracy",correct[-1]]]
 
-    #create table
     table = plt.table(cellText=table_data, loc='center')
 
     if use_auto_stop:
@@ -236,4 +239,3 @@ def train_and_test(suffix = ""):
 
 
 train_and_test("") #optional suffix adds onto the end of the experiment name
-
