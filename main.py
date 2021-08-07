@@ -15,7 +15,7 @@ from collections import namedtuple
 #    for batch, (data, target) in enumerate(test_loader):
 #test
 
-
+#comment
 using_full_data = True
 loss_function_id = 2
 lr = 0.1
