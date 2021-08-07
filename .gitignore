@@ -1,2 +1,3 @@
 venv
 physicsdataset/*.csv
+__pycache__/
