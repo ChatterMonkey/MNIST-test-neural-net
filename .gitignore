@@ -1,3 +1,4 @@
 venv
 physicsdataset/*.csv
 __pycache__/
+.idea/
