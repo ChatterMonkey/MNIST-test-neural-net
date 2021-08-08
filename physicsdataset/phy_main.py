@@ -1,4 +1,4 @@
-from physicsdataset.phy_loaders import opendata
+from physicsdataset.phy_loaders import open_test_data, open_training_data
 from physicsdataset.physics_net import Net
 import torch
 import torch.optim as optm
@@ -13,7 +13,7 @@ optimizer = optm.SGD(network.parameters(),0.1,0.5)
 
 
 variables.set_train_batch_size(train_batch_size)
-train_data, train_target = opendata(variables.train_batch_size + 1)
+train_data, train_target = open_training_data(variables.train_batch_size )
 train_target_tensor = torch.zeros([variables.train_batch_size,1])
 for i in range(variables.train_batch_size):
     train_target_tensor[i][0] = train_target[i]
