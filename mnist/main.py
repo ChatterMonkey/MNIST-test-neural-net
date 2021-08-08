@@ -1,15 +1,15 @@
 import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
-from net import Net
-from mnist_variables import variables
-from train import train
-from test import test
+from mnist.net import Net
+from mnist.mnist_variables import variables
+from mnist.train import train
+from mnist.test import test
 from mnist.loaders import test_loader,train_loader
-from functions import subset_data
+from shared.functions import subset_data
 import math
 import os
-from rocmaker import calculate_roc_curve_points
+from shared.rocmaker import calculate_roc_curve_points
 
 #for batch, (data, target) in enumerate(train_loader):
 #    for batch, (data, target) in enumerate(test_loader):

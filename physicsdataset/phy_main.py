@@ -1,7 +1,7 @@
 from physicsdataset.phy_loaders import opendata
-from physics_net import Net
+from physicsdataset.physics_net import Net
 import torch
-from phy_variables import variables
+from physicsdataset.phy_variables import variables
 
 
 

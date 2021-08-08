@@ -1,10 +1,10 @@
 
 
-from mnist_variables import variables
-from functions import subset_data
+from mnist.mnist_variables import variables
+from shared.functions import subset_data
 import torch
-from test import test
-from net import Net
+from mnist.test import test
+from mnist.net import Net
 from mnist.loaders import test_loader
 
 def load_network(path):

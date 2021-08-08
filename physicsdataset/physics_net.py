@@ -1,6 +1,6 @@
 from torch import nn as nn
 from torch.nn import functional as F
-from phy_variables import variables
+from physicsdataset.phy_variables import variables
 import torch
 
 class Net(nn.Module):

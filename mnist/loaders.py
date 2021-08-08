@@ -1,6 +1,6 @@
 import torch
 import torchvision
-from mnist_variables import variables
+from mnist.mnist_variables import variables
 
 train_loader = torch.utils.data.DataLoader(
   torchvision.datasets.MNIST('/Users/mayabasu/pytorchdatasets', train=True, download=True,
