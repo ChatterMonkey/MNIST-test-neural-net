@@ -18,7 +18,7 @@ from shared.rocmaker import calculate_roc_curve_points
 using_full_data = True
 loss_function_id = 2
 lr = 0.1
-n_epochs = 0
+n_epochs = 2
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
@@ -234,4 +234,4 @@ def train_and_test(suffix = ""):
 
 
 
-train_and_test("") #optional suffix adds onto the end of the experiment name
+train_and_test("TEST") #optional suffix adds onto the end of the experiment name
