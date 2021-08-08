@@ -4,7 +4,7 @@ def opendata(number_of_rows):
     training_data_list = []
     training_targets = []
 
-    with open("physicsdataset/training.csv") as training_data:
+    with open("training.csv") as training_data:
 
         trainreader = csv.reader(training_data)
         next(trainreader)
