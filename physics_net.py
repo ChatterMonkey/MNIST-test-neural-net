@@ -1,6 +1,6 @@
 from torch import nn as nn
 from torch.nn import functional as F
-
+from phy_variables import variables
 import torch
 
 class Net(nn.Module):
@@ -36,7 +36,7 @@ class Net(nn.Module):
         print(x.size())
 
 
-        x = x.view(1,-1)
+        x = x.view(variables.train_batch_size,-1)
         print("after view as")
         print(x.size())
 
