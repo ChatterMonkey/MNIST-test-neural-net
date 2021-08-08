@@ -1,8 +1,8 @@
-from functions import subset_data, prepare_target
-from loaders import test_loader
-from variables import variables
+from shared.functions import subset_data, prepare_target
+from mnist.loaders import test_loader
+from mnist.mnist_variables import variables
 import matplotlib.pyplot as plt
-from net import Net
+from mnist.net import Net
 import torch
 
 def sort_outputs(network,using_full_dataset):

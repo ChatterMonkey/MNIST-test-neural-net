@@ -1,5 +1,5 @@
 import torch
-from variables import variables
+from mnist.mnist_variables import variables
 
 
 def prepare_target(target):
@@ -70,19 +70,13 @@ def significance_loss(target,output,using_full_dataset):
     return loss
 
 
-def modified_significance_loss(target,output,using_full_dataset):
+def modified_significance_loss(target,output):
     target = prepare_target(target)
-
 
     exp_signal = 1
     exp_bkgd = 900
 
-    if using_full_dataset:
-        exp_bkgd = 9*len(target)/10
-        sigloss = sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
-    else:
-        exp_bkgd = 9*len(target)/10
-        sigloss = sigloss = mod_sigloss(len(target)/10,9*len(target)/10)
-
+    sigloss = mod_sigloss(exp_signal,exp_bkgd)
     loss = sigloss(target,output)
+
     return loss
