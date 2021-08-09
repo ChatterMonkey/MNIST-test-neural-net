@@ -8,8 +8,8 @@ import torch.nn.functional as f
 #there are 250000 events total
 
 train_batch_size = 20000
-#test_batch_size = 50000
-test_batch_size = 3
+test_batch_size = 50000
+#test_batch_size = 3
 num_train_batches = 10
 num_test_batches = 1
 variables.set_train_batch_size(train_batch_size)
@@ -22,7 +22,7 @@ print("processing training data...")
 train_data, train_target = open_training_data(num_train_batches)
 print("done processing training data")
 
-for epoch in range(10):
+for epoch in range(0):
     for batch in range(num_train_batches):
         optimizer.zero_grad()
 
@@ -70,11 +70,27 @@ for event in range(variables.test_batch_size):
 
 data_t = data_t.reshape([variables.test_batch_size,1,6,5])
 
-print(target_t)
-print(data_t)
+#print(target_t)
+#print(data_t)
 output = network(data_t,test_batch_size)
 
-print(output)
+#print(output)
+#print(target_t.size())
+
+num_correct = 0
+for guess in range(variables.test_batch_size):
+    if output[guess][0] > 0.5:
+        if target_t[guess][0]  == 1:
+            num_correct += 1
+    else:
+        if target_t[guess][0] ==0:
+            num_correct += 1
+
+print("{} correct".format(num_correct))
+print("{}% accuracy".format(num_correct/variables.test_batch_size*100))
+
+
+
 
 
 
