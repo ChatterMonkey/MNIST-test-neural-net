@@ -14,36 +14,36 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(50, 1)
 
 
-    def forward(self, x):
-        print("imput")
-        print(x.size())
+    def forward(self, x,batch_size):
+        #print("imput")
+        #print(x.size())
 
         x = self.conv1(x)
-        print("after conv 1")
-        print(x.size())
+        #print("after conv 1")
+        #print(x.size())
         x = F.relu(x)
-        print("after relu")
-        print(x.size())
+        #print("after relu")
+        #print(x.size())
         x = self.conv2(x)
-        print("after conv 2")
-        print(x.size())
+        #print("after conv 2")
+        #print(x.size())
         x= self.conv2_drop(x)
-        print("after drop")
-        print(x.size())
+        #print("after drop")
+        #print(x.size())
 
         x = F.relu(x)
-        print("after relu")
-        print(x.size())
+        #print("after relu")
+        #print(x.size())
 
 
-        x = x.view(variables.train_batch_size,-1)
-        print("after view as")
-        print(x.size())
+        x = x.view(batch_size,-1)
+        #print("after view as")
+        #print(x.size())
 
         x = self.fc1(x)
 
-        print("after fully connected layer")
-        print(x.size())
+        #print("after fully connected layer")
+        #print(x.size())
 
 
         x = F.relu(x)
@@ -51,8 +51,8 @@ class Net(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
 
-        print("after second fully connected layer")
-        print(x.size())
+        #print("after second fully connected layer")
+        #print(x.size())
         #print(x)
         #print("outputs")
         #for i in range(10):
