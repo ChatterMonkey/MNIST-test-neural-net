@@ -14,7 +14,7 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(50, 1)
 
 
-    def forward(self, x):
+    def forward(self, x,batch_size):
         #print("imput")
         #print(x.size())
 
@@ -36,7 +36,7 @@ class Net(nn.Module):
         #print(x.size())
 
 
-        x = x.view(variables.train_batch_size,-1)
+        x = x.view(batch_size,-1)
         #print("after view as")
         #print(x.size())
 

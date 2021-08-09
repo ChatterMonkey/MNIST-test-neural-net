@@ -5,33 +5,79 @@ import torch.optim as optm
 from physicsdataset.phy_variables import variables
 import torch.nn.functional as f
 
-train_batch_size = 100000
+#there are 250000 events total
+
+train_batch_size = 20000
+#test_batch_size = 50000
+test_batch_size = 3
+num_train_batches = 10
+num_test_batches = 1
+variables.set_train_batch_size(train_batch_size)
+variables.set_test_batch_size(test_batch_size)
 torch.manual_seed(0)
 network = Net()
 optimizer = optm.SGD(network.parameters(),0.1,0.5)
 
-
-
-variables.set_train_batch_size(train_batch_size)
-train_data, train_target = open_training_data(variables.train_batch_size )
-train_target_tensor = torch.zeros([variables.train_batch_size,1])
-for i in range(variables.train_batch_size):
-    train_target_tensor[i][0] = train_target[i]
-
-for j in range(len(train_data)):
-    for i in range(len(train_data[j])):
-        train_data[j][i] = float(train_data[j][i])
-train_data = torch.FloatTensor(train_data)
-train_data = train_data.reshape(variables.train_batch_size,1,5,6)
+print("processing training data...")
+train_data, train_target = open_training_data(num_train_batches)
+print("done processing training data")
 
 for epoch in range(10):
-    optimizer.zero_grad()
-    output = network(train_data)
-    #print(output.size())
-    #print(train_target_tensor.size())
-    loss = f.binary_cross_entropy(output,train_target_tensor)
-    print("LOSS = {}".format(loss))
-    loss.backward()
-    optimizer.step()
+    for batch in range(num_train_batches):
+        optimizer.zero_grad()
+
+        train_batch_data = train_data[batch]
+        train_batch_target = train_target[batch]
+
+        target_t = torch.zeros([variables.train_batch_size, 1])
+        data_t = torch.zeros([variables.train_batch_size,1,30])
+
+        for event in range(variables.train_batch_size):
+            target_t[event][0] = train_batch_target[event]
+
+        for event in range(variables.train_batch_size):
+            for variable in range(30):
+                data_t[event][0][variable] = float(train_batch_data[event][variable])
+
+        data_t = data_t.reshape([variables.train_batch_size,1,6,5])
+
+        output = network(data_t,train_batch_size)
+
+        loss = f.binary_cross_entropy(output,target_t)
+        print("LOSS = {}".format(loss))
+        loss.backward()
+        optimizer.step()
+
+
+
+
+print("processing testing data...")
+test_data, test_target = open_test_data(num_test_batches)
+print("done processing testing data")
+
+test_data = test_data[0]
+test_target = test_target[0]
+
+target_t = torch.zeros([variables.test_batch_size, 1])
+data_t = torch.zeros([variables.test_batch_size,1,30])
+
+for event in range(variables.test_batch_size):
+    target_t[event][0] = test_target[event]
+
+for event in range(variables.test_batch_size):
+    for variable in range(30):
+        data_t[event][0][variable] = float(test_data[event][variable])
+
+data_t = data_t.reshape([variables.test_batch_size,1,6,5])
+
+print(target_t)
+print(data_t)
+output = network(data_t,test_batch_size)
+
+print(output)
+
+
+
+
 
 
