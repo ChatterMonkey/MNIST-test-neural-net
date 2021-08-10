@@ -16,13 +16,13 @@ variables.set_train_batch_size(train_batch_size)
 variables.set_test_batch_size(test_batch_size)
 torch.manual_seed(0)
 network = Net()
-optimizer = optm.SGD(network.parameters(),0.1,0.5)
+optimizer = optm.SGD(network.parameters(),0.1,0.9)
 
 print("processing training data...")
 train_data, train_target = open_training_data(num_train_batches)
 print("done processing training data")
 
-for epoch in range(0):
+for epoch in range(3):
     for batch in range(num_train_batches):
         optimizer.zero_grad()
 
@@ -30,18 +30,18 @@ for epoch in range(0):
         train_batch_target = train_target[batch]
 
         target_t = torch.zeros([variables.train_batch_size, 1])
-        data_t = torch.zeros([variables.train_batch_size,1,30])
+        data_t = torch.zeros([variables.train_batch_size,30])
 
         for event in range(variables.train_batch_size):
             target_t[event][0] = train_batch_target[event]
 
         for event in range(variables.train_batch_size):
             for variable in range(30):
-                data_t[event][0][variable] = float(train_batch_data[event][variable])
+                data_t[event][variable] = float(train_batch_data[event][variable])
 
-        data_t = data_t.reshape([variables.train_batch_size,1,6,5])
 
-        output = network(data_t,train_batch_size)
+
+        output = network(data_t)
 
         loss = f.binary_cross_entropy(output,target_t)
         print("LOSS = {}".format(loss))
@@ -59,20 +59,20 @@ test_data = test_data[0]
 test_target = test_target[0]
 
 target_t = torch.zeros([variables.test_batch_size, 1])
-data_t = torch.zeros([variables.test_batch_size,1,30])
+data_t = torch.zeros([variables.test_batch_size,30])
 
 for event in range(variables.test_batch_size):
     target_t[event][0] = test_target[event]
 
 for event in range(variables.test_batch_size):
     for variable in range(30):
-        data_t[event][0][variable] = float(test_data[event][variable])
+        data_t[event][variable] = float(test_data[event][variable])
 
-data_t = data_t.reshape([variables.test_batch_size,1,6,5])
+
 
 #print(target_t)
 #print(data_t)
-output = network(data_t,test_batch_size)
+output = network(data_t)
 
 #print(output)
 #print(target_t.size())
