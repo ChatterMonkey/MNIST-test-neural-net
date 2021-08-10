@@ -5,6 +5,7 @@ import torch
 
 class Net(nn.Module):
     def __init__(self):
+        super(Net, self).__init__()
         self.fc1 = nn.Linear(30,128)
         self.fc2 = nn.Linear(128,256)
         self.fc3 = nn.Linear(256,1)
