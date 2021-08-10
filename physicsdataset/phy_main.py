@@ -72,7 +72,7 @@ for event in range(variables.test_batch_size):
 
 #print(target_t)
 #print(data_t)
-output = network(data_t,test_batch_size)
+output = network(data_t)
 
 #print(output)
 #print(target_t.size())
