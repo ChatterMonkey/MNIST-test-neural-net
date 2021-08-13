@@ -1,12 +1,13 @@
 from physicsdataset.phy_loaders import open_test_data, open_training_data
 from physicsdataset.phy_net import Net
 from physicsdataset.phy_train import train
+from physicsdataset.phy_test import test
 import torch
 import torch.optim as optm
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"),("ModifiedSignificanceLoss","msl"))
+loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"))
 
 loss_function_id = 2
 num_epochs = 2
@@ -50,41 +51,27 @@ print("processing testing data...")
 test_data, test_target = open_test_data(num_test_batches)
 print("done processing testing data")
 
-test_data = test_data[0]
-test_target = test_target[0]
 
-target_t = torch.zeros([variables.test_batch_size, 1])
-data_t = torch.zeros([variables.test_batch_size,variables.num_variables])
+for batch in tqdm(range(num_test_batches), colour = "cyan"):
+
+    test_data = test_data[batch]
+    test_target = test_target[batch]
+
+    target_t = torch.zeros([variables.test_batch_size, 1])
+    data_t = torch.zeros([variables.test_batch_size,variables.num_variables])
+
+    for event in range(variables.test_batch_size):
+        target_t[event][0] = test_target[event]
+
+    for event in range(variables.test_batch_size):
+        for variable in range(variables.num_variables):
+            data_t[event][variable] = abs(float(test_data[event][variable])/variables.normalization_constant)
+
+    num_correct, loss = test(network,data_t,target_t,loss_function_id)
 
 
-for event in range(variables.test_batch_size):
-    #print(event)
-
-    target_t[event][0] = test_target[event]
-
-for event in range(variables.test_batch_size):
-    for variable in range(variables.num_variables):
-        data_t[event][variable] = abs(float(test_data[event][variable])/300)
 
 
-#print(target_t)
-#print(data_t)
-
-output = network(data_t)
-#print(output)
-
-#print(output)
-#print(target_t.size())
-
-num_correct = 0
-for guess in range(variables.test_batch_size):
-
-    if output[guess][0] > 0.5:
-        if target_t[guess][0]  == 1:
-            num_correct += 1
-    else:
-        if target_t[guess][0] ==0:
-            num_correct += 1
 
 print("{} correct".format(num_correct))
 print("{}% accuracy".format(num_correct/variables.test_batch_size*100))
