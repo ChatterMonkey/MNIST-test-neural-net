@@ -1,4 +1,4 @@
-from shared.functions import subset_data, prepare_target
+from mnist.functions import subset_data, prepare_target
 from mnist.loaders import test_loader
 from mnist.mnist_variables import variables
 import matplotlib.pyplot as plt
