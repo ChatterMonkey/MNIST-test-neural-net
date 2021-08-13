@@ -8,21 +8,21 @@ import torch.nn.functional as f
 #there are 250000 events total
 num_variables = 1
 train_batch_size = 1
-test_batch_size = 1
+test_batch_size = 2
 #test_batch_size = 3
-num_train_batches = 3
-num_test_batches = 2
+num_train_batches = 2
+num_test_batches = 1
 variables.set_train_batch_size(train_batch_size)
 variables.set_test_batch_size(test_batch_size)
 torch.manual_seed(1)
 network = Net()
-optimizer = optm.SGD(network.parameters(),0.5)
+optimizer = optm.Adam(network.parameters(),0.5)
 
 print("processing training data...")
 #train_data, train_target = open_training_data(num_train_batches)
 #train_data = [[[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]],[[0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2]],[[0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3]]]
-train_data = [[[0.1]],[[0.2]],[[0.3]]]
-train_target = [[0],[1],[1]]
+train_data = [[[0.1]],[[0.2]]]
+train_target = [[0],[1]]
 
 
 print("done processing training data")
@@ -33,12 +33,14 @@ print(len(train_data[0]))
 
 
 
-for epoch in range(50):
+for epoch in range(20):
     for batch in range(num_train_batches):
         network.train()
         optimizer.zero_grad()
 
         train_batch_data = train_data[batch]
+
+
         train_batch_target = train_target[batch]
 
         target_t = torch.zeros([variables.train_batch_size, 1])
@@ -52,6 +54,10 @@ for epoch in range(50):
                 data_t[event][variable] = float(train_batch_data[event][variable])
         print("")
         print("")
+        print(train_batch_data)
+        print(train_batch_target)
+        print(data_t)
+        print(target_t)
         #print(data_t)
         output = network(data_t)
         #print(list(network.parameters())[0])
@@ -75,8 +81,8 @@ print("processing testing data...")
 
 
 #test_data = [[[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]],[[0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2]],[[0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3]]]
-test_target = [[0],[1]]
-test_data = [[[0.1]],[[0.2]],[0.3]]
+test_target = [[0,1]]
+test_data = [[[0.1],[0.2]]]
 
 print("done processing testing data")
 
@@ -97,6 +103,7 @@ for event in range(variables.test_batch_size):
 
 #print(target_t)
 #print(data_t)
+print(data_t)
 output = network(data_t)
 print(output)
 
