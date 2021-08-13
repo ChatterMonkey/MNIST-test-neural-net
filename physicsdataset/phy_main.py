@@ -10,7 +10,7 @@ num_variables = 30
 train_batch_size = 64
 
 #test_batch_size = 3
-num_train_batches = 2
+num_train_batches = 10
 num_test_batches = 1
 test_batch_size = train_batch_size * num_train_batches
 variables.set_train_batch_size(train_batch_size)
@@ -34,7 +34,7 @@ print(len(train_data[0]))
 
 
 
-for epoch in range(2000):
+for epoch in range(200):
     for batch in range(num_train_batches):
         network.train()
         optimizer.zero_grad()
@@ -82,7 +82,7 @@ network.eval()
 
 print("processing testing data...")
 variables.set_train_batch_size(test_batch_size)
-test_data, test_target = open_training_data(num_test_batches)
+test_data, test_target = open_test_data(num_test_batches)
 
 
 #test_data = [[[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],[0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2],[0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3]]]

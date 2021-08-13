@@ -45,8 +45,8 @@ def open_test_data(number_of_batches):
 
     with open("training.csv") as testing_data:
         testreader = csv.reader(testing_data)
-        #for i in range(200001):
-        for i in range(1):
+        for i in range(200001):
+        #for i in range(1):
             next(testreader)
 
         for j in range(number_of_batches):
