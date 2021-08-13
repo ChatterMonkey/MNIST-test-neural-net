@@ -1,7 +1,7 @@
 
 
 from mnist.mnist_variables import variables
-from shared.functions import subset_data
+from mnist.functions import subset_data
 import torch
 from mnist.test import test
 from mnist.net import Net

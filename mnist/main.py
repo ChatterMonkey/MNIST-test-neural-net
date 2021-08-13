@@ -6,7 +6,7 @@ from mnist.mnist_variables import variables
 from mnist.train import train
 from mnist.test import test
 from mnist.loaders import test_loader,train_loader
-from shared.functions import subset_data
+from mnist.functions import subset_data
 import math
 import os
 from shared.rocmaker import calculate_roc_curve_points
