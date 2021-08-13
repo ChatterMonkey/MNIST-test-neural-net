@@ -7,7 +7,6 @@ def open_training_data(number_of_batches):
         print("Warning! requested too much training data, only 200000 records available, {} requested".format(number_of_batches * variables.train_batch_size))
         return "warning"
 
-
     training_data_lists = []
     training_target_lists = []
     with open("training.csv") as training_data:
@@ -19,7 +18,7 @@ def open_training_data(number_of_batches):
             train_target_list = []
             for i in range(variables.train_batch_size):
                 line = next(trainreader)
-                train_data_list.append(line[1:31] )
+                train_data_list.append(line[1:31])
                 if line[32] == 's':
                     train_target_list.append(1)
                 else:
