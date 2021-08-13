@@ -1,6 +1,6 @@
 import csv
 from physicsdataset.phy_variables import variables
-
+from tqdm import tqdm
 def open_training_data(number_of_batches):
 
     if number_of_batches * variables.train_batch_size > 200000:
@@ -14,22 +14,18 @@ def open_training_data(number_of_batches):
         trainreader = csv.reader(training_data)
         next(trainreader)
 
-        for j in range(number_of_batches):
+        for j in tqdm(range(number_of_batches), colour = "black",desc= "Loading Training Data"):
             train_data_list = []
             train_target_list = []
             for i in range(variables.train_batch_size):
                 line = next(trainreader)
                 train_data_list.append(line[1:31])
                 if line[32] == 's':
-                    #print("signal")
                     train_target_list.append(1)
                 else:
-                    #print("bkground")
                     train_target_list.append(0)
-                #print(train_target_list)
             training_data_lists.append(train_data_list)
             training_target_lists.append(train_target_list)
-            #print( training_target_lists)
 
         return training_data_lists,training_target_lists
 
@@ -47,7 +43,7 @@ def open_test_data(number_of_batches):
         for i in range(200001):
             next(testreader)
 
-        for j in range(number_of_batches):
+        for j in tqdm(range(number_of_batches), colour="black",desc= "Loading Testing Data"):
             test_data_list = []
             test_target_list = []
             for i in range(variables.test_batch_size):

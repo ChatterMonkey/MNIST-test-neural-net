@@ -12,10 +12,10 @@ loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("Bi
 loss_function_id = 2
 num_epochs = 2
 
-num_train_batches = 1
-num_test_batches = 2
-train_batch_size = 2
-test_batch_size = 2
+num_train_batches = 50
+num_test_batches = 20
+train_batch_size = 64
+test_batch_size = 64
 
 variables.set_epochs(num_epochs)
 variables.set_train_batch_size(train_batch_size)
@@ -25,11 +25,11 @@ torch.manual_seed(1)
 network = Net()
 optimizer = optm.Adam(network.parameters(),0.001)
 
-print("processing training data...")
-train_data, train_target = open_training_data(num_train_batches)
-print("done processing training data")
 
-for epoch in tqdm(range(variables.num_epochs), colour = "green"):
+train_data, train_target = open_training_data(num_train_batches)
+
+
+for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"):
     for batch in range(num_train_batches):
         train_batch_data = train_data[batch]
         train_batch_target = train_target[batch]
@@ -47,12 +47,12 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green"):
         train(network,optimizer,data_t,target_t,loss_function_id)
 
 
-print("processing testing data...")
+
 test_data, test_target = open_test_data(num_test_batches)
-print("done processing testing data")
+
 
 total_num_correct = 0
-for batch in tqdm(range(num_test_batches), colour = "magenta"):
+for batch in tqdm(range(num_test_batches), colour = "magenta",desc= "Testing"):
 
 
     test_data_batch = test_data[batch]
@@ -73,7 +73,7 @@ for batch in tqdm(range(num_test_batches), colour = "magenta"):
 
 
 
-print("{} correct, {}% accuracy".format(total_num_correct,total_num_correct/variables.test_batch_size*num_test_batches*100))
+print("{} correct, {}% accuracy".format(total_num_correct,total_num_correct/(variables.test_batch_size*num_test_batches)*100))
 
 
 
