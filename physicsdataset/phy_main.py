@@ -7,11 +7,12 @@ import torch.nn.functional as f
 
 #there are 250000 events total
 num_variables = 30
-train_batch_size = 1
-test_batch_size = 2
+train_batch_size = 64
+
 #test_batch_size = 3
 num_train_batches = 2
 num_test_batches = 1
+test_batch_size = train_batch_size * num_train_batches
 variables.set_train_batch_size(train_batch_size)
 variables.set_test_batch_size(test_batch_size)
 torch.manual_seed(1)
@@ -51,7 +52,7 @@ for epoch in range(2000):
 
         for event in range(variables.train_batch_size):
             for variable in range(num_variables):
-                data_t[event][variable] = float(train_batch_data[event][variable])
+                data_t[event][variable] = abs(float(train_batch_data[event][variable])/300)
         print("")
         print("")
         print(train_batch_data)
@@ -105,7 +106,7 @@ for event in range(variables.test_batch_size):
 
 for event in range(variables.test_batch_size):
     for variable in range(num_variables):
-        data_t[event][variable] = float(test_data[event][variable])
+        data_t[event][variable] = abs(float(test_data[event][variable])/300)
 
 
 print(target_t)
