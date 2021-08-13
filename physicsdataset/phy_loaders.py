@@ -10,6 +10,7 @@ def open_training_data(number_of_batches):
     training_data_lists = []
     training_target_lists = []
     with open("training.csv") as training_data:
+        training_data.seek(0)
         trainreader = csv.reader(training_data)
         next(trainreader)
 
@@ -20,11 +21,15 @@ def open_training_data(number_of_batches):
                 line = next(trainreader)
                 train_data_list.append(line[1:31])
                 if line[32] == 's':
+                    print("signal")
                     train_target_list.append(1)
                 else:
+                    print("bkground")
                     train_target_list.append(0)
+                print(train_target_list)
             training_data_lists.append(train_data_list)
             training_target_lists.append(train_target_list)
+            print( training_target_lists)
 
         return training_data_lists,training_target_lists
 
@@ -40,7 +45,8 @@ def open_test_data(number_of_batches):
 
     with open("training.csv") as testing_data:
         testreader = csv.reader(testing_data)
-        for i in range(200001):
+        #for i in range(200001):
+        for i in range(1):
             next(testreader)
 
         for j in range(number_of_batches):
