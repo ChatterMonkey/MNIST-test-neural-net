@@ -36,7 +36,6 @@ def open_training_data(number_of_batches):
 
 
 def open_test_data(number_of_batches):
-
     if number_of_batches * variables.test_batch_size > 50000:
         print("Warning! requested too much testing data, only 50000 records available, {} requested".format(number_of_batches * variables.test_batch_size))
 
@@ -46,7 +45,6 @@ def open_test_data(number_of_batches):
     with open("training.csv") as testing_data:
         testreader = csv.reader(testing_data)
         for i in range(200001):
-        #for i in range(1):
             next(testreader)
 
         for j in range(number_of_batches):

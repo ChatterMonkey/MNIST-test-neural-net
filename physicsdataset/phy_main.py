@@ -12,10 +12,10 @@ loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("Bi
 loss_function_id = 2
 num_epochs = 2
 
-num_train_batches = 5
-num_test_batches = 1
-train_batch_size = 20
-test_batch_size = train_batch_size * num_train_batches
+num_train_batches = 1
+num_test_batches = 2
+train_batch_size = 2
+test_batch_size = 2
 
 variables.set_epochs(num_epochs)
 variables.set_train_batch_size(train_batch_size)
@@ -51,30 +51,29 @@ print("processing testing data...")
 test_data, test_target = open_test_data(num_test_batches)
 print("done processing testing data")
 
+total_num_correct = 0
+for batch in tqdm(range(num_test_batches), colour = "magenta"):
 
-for batch in tqdm(range(num_test_batches), colour = "cyan"):
 
-    test_data = test_data[batch]
-    test_target = test_target[batch]
+    test_data_batch = test_data[batch]
+    test_target_batch = test_target[batch]
 
     target_t = torch.zeros([variables.test_batch_size, 1])
     data_t = torch.zeros([variables.test_batch_size,variables.num_variables])
 
     for event in range(variables.test_batch_size):
-        target_t[event][0] = test_target[event]
+        target_t[event][0] = test_target_batch[event]
 
     for event in range(variables.test_batch_size):
         for variable in range(variables.num_variables):
-            data_t[event][variable] = abs(float(test_data[event][variable])/variables.normalization_constant)
+            data_t[event][variable] = abs(float(test_data_batch[event][variable])/variables.normalization_constant)
 
     num_correct, loss = test(network,data_t,target_t,loss_function_id)
+    total_num_correct += num_correct
 
 
 
-
-
-print("{} correct".format(num_correct))
-print("{}% accuracy".format(num_correct/variables.test_batch_size*100))
+print("{} correct, {}% accuracy".format(total_num_correct,total_num_correct/variables.test_batch_size*num_test_batches*100))
 
 
 
