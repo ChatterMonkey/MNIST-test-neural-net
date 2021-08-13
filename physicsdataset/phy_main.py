@@ -4,13 +4,14 @@ import torch
 import torch.optim as optm
 from physicsdataset.phy_variables import variables
 import torch.nn.functional as f
+from tqdm import tqdm
 
 #there are 250000 events total
 num_variables = 30
 train_batch_size = 64
 
 #test_batch_size = 3
-num_train_batches = 10
+num_train_batches = 500
 num_test_batches = 1
 test_batch_size = train_batch_size * num_train_batches
 variables.set_train_batch_size(train_batch_size)
@@ -32,9 +33,7 @@ print(train_data)
 print(len(train_data))
 print(len(train_data[0]))
 
-
-
-for epoch in range(200):
+for epoch in tqdm(range(200), colour = "green"):
     for batch in range(num_train_batches):
         network.train()
         optimizer.zero_grad()
@@ -53,29 +52,29 @@ for epoch in range(200):
         for event in range(variables.train_batch_size):
             for variable in range(num_variables):
                 data_t[event][variable] = abs(float(train_batch_data[event][variable])/300)
-        print("")
-        print("")
-        print(train_batch_data)
-        print(train_batch_target)
-        print(data_t)
-        print(target_t)
+        #print("")
+        #print("")
+        #print(train_batch_data)
+        #print(train_batch_target)
+        #print(data_t)
+        #print(target_t)
         #print(data_t)
         output = network(data_t)
         #print(list(network.parameters())[0])
-        print("output is {}".format(output))
-        print("target is {}".format(target_t))
+        #print("output is {}".format(output))
+        #print("target is {}".format(target_t))
 
 
 
         loss = f.binary_cross_entropy(output,target_t)
-        print("LOSS = {}".format(loss))
+        #print("LOSS = {}".format(loss))
 
 
         loss.backward()
 
         optimizer.step()
 
-        print("output is now {}".format(network(data_t)))
+        #print("output is now {}".format(network(data_t)))
 
 
 network.eval()
@@ -90,8 +89,8 @@ test_data, test_target = open_test_data(num_test_batches)
 #test_data = [[[0.1],[0.2],[0.3]]]
 
 print("done processing testing data")
-print(test_data)
-print(test_target)
+#print(test_data)
+#print(test_target)
 test_data = test_data[0]
 test_target = test_target[0]
 
@@ -100,7 +99,7 @@ data_t = torch.zeros([variables.test_batch_size,num_variables])
 
 
 for event in range(variables.test_batch_size):
-    print(event)
+    #print(event)
 
     target_t[event][0] = test_target[event]
 
@@ -109,11 +108,11 @@ for event in range(variables.test_batch_size):
         data_t[event][variable] = abs(float(test_data[event][variable])/300)
 
 
-print(target_t)
-print(data_t)
+#print(target_t)
+#print(data_t)
 
 output = network(data_t)
-print(output)
+#print(output)
 
 #print(output)
 #print(target_t.size())

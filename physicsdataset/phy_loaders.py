@@ -21,15 +21,15 @@ def open_training_data(number_of_batches):
                 line = next(trainreader)
                 train_data_list.append(line[1:31])
                 if line[32] == 's':
-                    print("signal")
+                    #print("signal")
                     train_target_list.append(1)
                 else:
-                    print("bkground")
+                    #print("bkground")
                     train_target_list.append(0)
-                print(train_target_list)
+                #print(train_target_list)
             training_data_lists.append(train_data_list)
             training_target_lists.append(train_target_list)
-            print( training_target_lists)
+            #print( training_target_lists)
 
         return training_data_lists,training_target_lists
 
