@@ -9,7 +9,7 @@ from mnist.loaders import test_loader,train_loader
 from mnist.functions import subset_data
 import math
 import os
-from shared.rocmaker import calculate_roc_curve_points
+from mnist.rocmaker import calculate_roc_curve_points
 
 #for batch, (data, target) in enumerate(train_loader):
 #    for batch, (data, target) in enumerate(test_loader):
