@@ -53,7 +53,7 @@ def mod_sigloss(expectedSignal,expectedBackground):
         y_pred_rearanged = torch.reshape(y_pred,(-1,))
         s = signalWeight*torch.sum(y_pred_rearanged*y_true)
         b = backgroundWeight*torch.sum(y_pred_rearanged*(1-y_true))
-        return -(s*s)
+        return -(s*s)/(s+b+0.000001)
     return mod_sigloss
 
 

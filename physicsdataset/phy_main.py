@@ -7,30 +7,28 @@ import torch.optim as optm
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-loss_function_tuple = (("MeanSquaredError","mse"),("SignificanceLoss","sl"),("BineryCrossEntropy","bce"))
+
 
 loss_function_id = 2
 num_epochs = 2
-
-num_train_batches = 50
-num_test_batches = 20
+learning_rate = 0.001
+num_training_batches = 50
+num_testing_batches = 20
 train_batch_size = 64
 test_batch_size = 64
 
-variables.set_epochs(num_epochs)
-variables.set_train_batch_size(train_batch_size)
-variables.set_test_batch_size(test_batch_size)
+variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
 
 torch.manual_seed(1)
 network = Net()
 optimizer = optm.Adam(network.parameters(),0.001)
 
 
-train_data, train_target = open_training_data(num_train_batches)
+train_data, train_target = open_training_data(num_training_batches)
 
 
 for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"):
-    for batch in range(num_train_batches):
+    for batch in range(num_training_batches):
         train_batch_data = train_data[batch]
         train_batch_target = train_target[batch]
 
@@ -48,11 +46,11 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
 
 
 
-test_data, test_target = open_test_data(num_test_batches)
+test_data, test_target = open_test_data(num_testing_batches)
 
 
 total_num_correct = 0
-for batch in tqdm(range(num_test_batches), colour = "magenta",desc= "Testing"):
+for batch in tqdm(range(num_testing_batches), colour ="magenta", desc="Testing"):
 
 
     test_data_batch = test_data[batch]
@@ -72,8 +70,9 @@ for batch in tqdm(range(num_test_batches), colour = "magenta",desc= "Testing"):
     total_num_correct += num_correct
 
 
+torch.save(network.state_dict(),"../phy_nets/net1.pth")
 
-print("{} correct, {}% accuracy".format(total_num_correct,total_num_correct/(variables.test_batch_size*num_test_batches)*100))
+print("{} correct, {}% accuracy".format(total_num_correct, total_num_correct / (variables.test_batch_size * num_testing_batches) * 100))
 
 
 
