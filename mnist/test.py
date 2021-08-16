@@ -45,7 +45,7 @@ def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False, 
                     loss = modified_significance_loss(target,output,False) #target preparation happens within significance loss
                 elif target_length ==10: #full dataset
 
-                    loss = modified_significance_loss(target,output,True) #target preparation happens within significance loss
+                    loss = modified_significance_loss(target,output) #target preparation happens within significance loss
 
                 else:
                     print("LESS THEN 10 DIFFERENT SIGNALS APPEARED IN THE TARGET") #suspicious activity

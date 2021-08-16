@@ -5,16 +5,17 @@ from physicsdataset.phys_roc_maker import calculate_roc_curve_points
 from physicsdataset.phy_net import Net
 import matplotlib.pyplot as plt
 import math
+import torch
 
 connection = sq.connect("data.sql")
 cur = connection.cursor()
 e = cur.execute
 
-e('DROP TABLE data')
+#e('DROP TABLE data')
 
 
-def add_data(network_state_dict, training_loss,testing_loss,accuracy,tp_list,fp_list):
-    network_string = json.dumps(network_state_dict)
+def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list):
+    network_string = json.dumps(network_path)
 
     trainlj = json.dumps(training_loss)
     testlj = json.dumps(testing_loss)
@@ -23,7 +24,7 @@ def add_data(network_state_dict, training_loss,testing_loss,accuracy,tp_list,fp_
     fp = json.dumps(fp_list)
 
     e('CREATE TABLE IF NOT EXISTS data(id integer primary key autoincrement, network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp)')
-    e('INSERT INTO data VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(None, network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
+    e('INSERT INTO data VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(None, network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
     print(e('Select * from data').fetchall())
 
 
@@ -42,7 +43,8 @@ def visulize(experiment_id = 0, plot_last = False):
     print("id , train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp")
 
     network = Net()
-    network.load_state_dict(data[2])
+    network_state_dict = torch.load(json.loads(data[1]))
+    network.load_state_dict(network_state_dict)
     loss_function_str = v.loss_function_tuple[data[6]][0]
     learning_rate = data[7]
     num_epochs = data[8]
@@ -124,11 +126,18 @@ def visulize(experiment_id = 0, plot_last = False):
 
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
 
-    true_positive_rates, false_positive_rates  = calculate_roc_curve_points(cutoffs,network,loss_function_id,30)
+    true_positive_rates =[]
+    false_positive_rates  = []
 
-    #plt.plot(false_positive_rates,true_positive_rates)
+    for cutoff in enumerate(cutoffs):
+        print(cutoff)
+        tp,fp = calculate_roc_curve_points(cutoff,network,loss_function_id,2)
+        true_positive_rates.append(tp)
+        false_positive_rates.append(fp)
 
-    #plt.subplot(4,2,7)
+    plt.plot(false_positive_rates,true_positive_rates)
+
+    plt.subplot(4,2,7)
 
     table_data = [
     ["Final Significance", round(significances[-1],4)],
@@ -166,8 +175,8 @@ accuracy = [0,6,7]
 tp = [9,6,7]
 fp = [10,3,4]
 
-
-add_data(training_loss,testing_loss, accuracy,tp,fp)
+network_path= "../phy_nets/net1.pth"
+add_data(network_path,training_loss,testing_loss, accuracy,tp,fp)
 
 print(e('SELECT * FROM data WHERE id = 2').fetchall())
 print(e('''SELECT * FROM data ORDER BY id DESC LIMIT 1''').fetchall())

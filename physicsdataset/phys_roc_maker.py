@@ -18,24 +18,33 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id,num_testing_bat
     true_positives = []
 
     test_data_lists,test_target_lists = open_test_data(num_testing_batches)
+    print(test_target_lists)
     for cutoff in enumerate(cutoffs):
         for batch in tqdm(range(num_testing_batches), colour ="blue", desc="Generating ROC curve"):
 
+            print(test_data_lists)
             test_data_batch = test_data_lists[batch]
             test_target_batch = test_target_lists[batch]
-            target_size = len(test_target_batch[0])
-            data_size = len(test_data_batch[0])
+            print(test_target_batch )
+
+
+            target_size = len(test_target_batch)
+            data_size = len(test_data_batch)
 
 
             target_t = torch.zeros([target_size, 1])
-            data_t = torch.zeros([data_size,num_testing_batches])
+            data_t = torch.zeros([len(test_data_batch),len(test_data_batch[0])])
 
             for event in range(num_testing_batches):
                 target_t[event][0] = test_target_batch[event]
 
-            for event in range(num_testing_batches):
+            for event in range(len(test_target_batch)):
                 for variable in range(variables.num_variables):
-                    data_t[event][variable] = abs(float(test_data_batch[event][variable])/variables.normalization_constant)
+                    print("test data batch")
+                    print(len(test_data_batch))
+                    print(test_data_batch)
+                    var = abs(float(test_data_batch[event][variable])/variables.normalization_constant)
+                    data_t[event][variable] = var
             num_correct,loss, tp,fp = test(network,data_t,target_t,loss_function_id,True,cutoff)
 
             true_positives.append(tp/data_size)

@@ -11,14 +11,11 @@ import math
 import os
 from mnist.rocmaker import calculate_roc_curve_points
 
-#for batch, (data, target) in enumerate(train_loader):
-#    for batch, (data, target) in enumerate(test_loader):
-
 
 using_full_data = True
-loss_function_id = 2
-lr = 0.1
-n_epochs = 2
+loss_function_id = 3
+lr = 0.001
+n_epochs = 15
 use_auto_stop = False # automaticallly stop when accuracy rises above  the required acuracy
 
 variables.set_lr(lr)
@@ -102,8 +99,8 @@ def train_and_test(suffix = ""):
         experiment_name = loss_function_tuple[loss_function_id][1] + "_"+ str(variables.n_epochs) +"_" + status + "_" + str(variables.learning_rate).replace(".","_") + str(suffix)
     print("Experiment Name: {}".format(experiment_name))
 
-    loss_graph_filepath = "loss_graphs/"  + str(experiment_name) + ".png"
-    nn_filepath = "neuralnets/" + str(experiment_name) + ".pth"
+    loss_graph_filepath = "../loss_graphs/"  + str(experiment_name) + ".png"
+    nn_filepath = "../neuralnets/" + str(experiment_name) + ".pth"
 
     if not file_check(nn_filepath):
         print("quit to protect network file")
@@ -234,4 +231,4 @@ def train_and_test(suffix = ""):
 
 
 
-train_and_test("TEST") #optional suffix adds onto the end of the experiment name
+train_and_test("1_to_900") #optional suffix adds onto the end of the experiment name

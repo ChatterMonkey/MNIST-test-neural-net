@@ -70,6 +70,7 @@ for batch in tqdm(range(num_testing_batches), colour ="magenta", desc="Testing")
     total_num_correct += num_correct
 
 
+torch.save(network.state_dict(),"../phy_nets/net1.pth")
 
 print("{} correct, {}% accuracy".format(total_num_correct, total_num_correct / (variables.test_batch_size * num_testing_batches) * 100))
 
