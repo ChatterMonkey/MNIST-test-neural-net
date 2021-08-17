@@ -36,7 +36,8 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id,num_testing_bat
             data_t = torch.zeros([len(test_data_batch),len(test_data_batch[0])])
 
             for event in range(num_testing_batches):
-                target_t[event][0] = test_target_batch[event]
+                i = target_t[event][0]
+                test_target_batch[event] = i
 
             for event in range(len(test_target_batch)):
                 for variable in range(variables.num_variables):

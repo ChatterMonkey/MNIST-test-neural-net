@@ -10,12 +10,12 @@ from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
 
-
-loss_function_id = 2
+# 200000
+loss_function_id = 0
 num_epochs = 5
-learning_rate = 0.1
-num_training_batches = 1000
-num_testing_batches = 20
+learning_rate = 0.5
+num_training_batches = 100
+num_testing_batches = 100
 train_batch_size = 64
 test_batch_size = 64
 
@@ -34,6 +34,7 @@ testing_loss = []
 test_data, test_target = open_test_data(num_testing_batches)
 for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"):
     total_num_correct = 0
+    total_loss = 0
     for batch in range(num_training_batches):
         train_batch_data = train_data[batch]
         train_batch_target = train_target[batch]
@@ -49,12 +50,14 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
                 data_t[event][variable] = abs(float(train_batch_data[event][variable])/300)
 
         loss = train(network,optimizer,data_t,target_t,loss_function_id)
-        training_loss.append(loss)
+        total_loss += loss
+
+    training_loss.append(total_loss/(num_training_batches * train_batch_size))
 
 
 
 
-
+    total_test_loss  = 0
     for batch in range(num_testing_batches):
 
 
@@ -72,8 +75,9 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
                 data_t[event][variable] = abs(float(test_data_batch[event][variable])/variables.normalization_constant)
 
         num_correct, loss = test(network,data_t,target_t,loss_function_id)
-        testing_loss.append(loss.item())
+        total_test_loss += loss.item()
         total_num_correct += num_correct
+    testing_loss.append(total_loss/(num_testing_batches*test_batch_size))
     correct_list.append(total_num_correct)
 
 
