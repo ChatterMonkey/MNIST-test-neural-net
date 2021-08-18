@@ -13,7 +13,7 @@ def open_training_data(number_of_batches):
 
     training_data = np.zeros((number_of_batches,variables.train_batch_size,variables.num_variables), dtype=float) #variables by number of events in one batch by number of batches
     training_target = np.zeros((number_of_batches,variables.train_batch_size,1))
-    print(training_data)
+
     with open("training.csv") as training_data_file:
         training_data_file.seek(0)
         trainreader = csv.reader(training_data_file)
@@ -23,17 +23,15 @@ def open_training_data(number_of_batches):
 
             for event in range(variables.train_batch_size):
                 line = next(trainreader)
-                print(line)
-                print(line[0])
-                for variable in range(variables.num_variables):
-                    training_data[batch,event,variable] = line[variable]
+
+                for variable in range(1,variables.num_variables+1):
+                    training_data[batch,event,variable-1] = float(line[variable])/variables.normalization_constant
 
                 if line[32]=='s':
                     training_target[batch,event,0] = 1
                 else:
                     training_target[batch,event,0] = 0
-
-
+        print(training_data)
         return training_data,training_target
 
 
@@ -54,14 +52,11 @@ def open_test_data(number_of_batches):
         for batch in tqdm(range(number_of_batches), colour="black",desc= "Loading Testing Data"):
             for event in range(variables.test_batch_size):
                 line = next(testreader)
-                for variable in range(variables.num_variables):
-                    testing_data[batch,event,variable] = line[variable]
-
+                for variable in range(1,variables.num_variables+1):
+                    testing_data[batch,event,variable-1] = float(line[variable])/variables.normalization_constant
                 if line[32]=='s':
                     testing_target[batch,event,0] = 1
                 else:
                     testing_target[batch,event,0] = 0
-        print(testing_data)
-
-
+                print(testing_data)
         return testing_data,testing_target
