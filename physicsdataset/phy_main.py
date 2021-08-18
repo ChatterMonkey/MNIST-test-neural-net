@@ -41,14 +41,19 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
     testing_loss_this_epoch = 0
 
     for batch in range(num_training_batches):
-        loss = train(network,optimizer,train_data,test_data,loss_function_id)
+        batch_train_data = train_data[batch]
+        batch_train_target = train_target[batch]
+
+        loss = train(network,optimizer,batch_train_data,batch_train_target,loss_function_id)
         training_loss_this_epoch += loss
 
     training_loss_each_epoch.append(training_loss_this_epoch)
 
     for batch in range(num_testing_batches):
+        batch_test_data = test_data[batch]
+        batch_test_target= test_target[batch]
 
-        num_correct, loss = test(network,test_data,test_target,loss_function_id)
+        num_correct, loss = test(network,batch_test_data,batch_test_target,loss_function_id)
         testing_loss_this_epoch += loss.item()
         num_correct_this_epoch += num_correct
 
@@ -61,7 +66,7 @@ torch.save(network.state_dict(),"../phy_nets/net1.pth")
 
 network_path= "../phy_nets/net1.pth"
 cutoffs= [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
-tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,variables.num_testing_batches)
+tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
 
 add_data(network_path,training_loss_each_epoch,testing_loss_each_epoch, accuracy_each_epoch,tp,fp)
 
