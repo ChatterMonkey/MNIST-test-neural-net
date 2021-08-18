@@ -2,6 +2,7 @@ import csv
 from physicsdataset.phy_variables import variables
 from tqdm import tqdm
 import numpy as np
+import torch
 
 
 
@@ -11,8 +12,8 @@ def open_training_data(number_of_batches):
         print("Warning! requested too much training data, only 200000 records available, {} requested".format(number_of_batches * variables.train_batch_size))
         return "warning"
 
-    training_data = np.zeros((number_of_batches,variables.train_batch_size,variables.num_variables), dtype=float) #variables by number of events in one batch by number of batches
-    training_target = np.zeros((number_of_batches,variables.train_batch_size,1))
+    training_data = torch.zeros((number_of_batches,variables.train_batch_size,variables.num_variables), dtype=float) #variables by number of events in one batch by number of batches
+    training_target = torch.zeros((number_of_batches,variables.train_batch_size,1))
 
     with open("training.csv") as training_data_file:
         training_data_file.seek(0)
@@ -28,9 +29,9 @@ def open_training_data(number_of_batches):
                     training_data[batch,event,variable-1] = float(line[variable])/variables.normalization_constant
 
                 if line[32]=='s':
-                    training_target[batch,event,0] = 1
+                    training_target[batch][event][0] = 1
                 else:
-                    training_target[batch,event,0] = 0
+                    training_target[batch][event][0] = 0
         print(training_data)
         return training_data,training_target
 
@@ -60,3 +61,15 @@ def open_test_data(number_of_batches):
                     testing_target[batch,event,0] = 0
                 print(testing_data)
         return testing_data,testing_target
+
+# 200000
+loss_function_id = 0
+num_epochs = 5
+learning_rate = 0.5
+num_training_batches = 100
+num_testing_batches = 100
+train_batch_size = 64
+test_batch_size = 64
+
+variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
+open_training_data(3)
