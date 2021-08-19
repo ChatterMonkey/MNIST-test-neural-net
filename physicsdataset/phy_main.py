@@ -12,7 +12,7 @@ from physicsdataset.phy_variables import variables
 
 # 250000
 loss_function_id = 2
-num_epochs = 50
+num_epochs = 200
 learning_rate = 0.1
 num_training_batches = 3125
 num_testing_batches = 781
@@ -64,8 +64,8 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
 
 
 
-network_path= "../phy_nets/net2.pth"
-plot_path = '../physics_graphs/test_graph2.png'
+network_path= "../phy_nets/net4.pth"
+plot_path = '../physics_graphs/test_graph4.png'
 
 
 torch.save(network.state_dict(),network_path)
