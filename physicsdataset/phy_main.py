@@ -10,12 +10,12 @@ from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
 
-# 200000
-loss_function_id = 0
-num_epochs = 5
-learning_rate = 0.5
-num_training_batches = 100
-num_testing_batches = 100
+# 250000
+loss_function_id = 2
+num_epochs = 50
+learning_rate = 0.1
+num_training_batches = 3125
+num_testing_batches = 781
 train_batch_size = 64
 test_batch_size = 64
 
@@ -23,7 +23,7 @@ variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_t
 
 torch.manual_seed(1)
 network = Net()
-optimizer = optm.Adam(network.parameters(),0.001)
+optimizer = optm.Adam(network.parameters(),learning_rate)
 
 
 train_data, train_target = open_training_data(num_training_batches)
@@ -61,16 +61,23 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
     accuracy_each_epoch.append(num_correct_this_epoch/(num_testing_batches*test_batch_size)*100)
 
 
-torch.save(network.state_dict(),"../phy_nets/net1.pth")
 
 
-network_path= "../phy_nets/net1.pth"
+
+network_path= "../phy_nets/net2.pth"
+plot_path = '../physics_graphs/test_graph2.png'
+
+
+torch.save(network.state_dict(),network_path)
+
 cutoffs= [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+
 tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
+
 
 add_data(network_path,training_loss_each_epoch,testing_loss_each_epoch, accuracy_each_epoch,tp,fp)
 
-visulize(plot_last=True)
+visulize(plot_path,plot_last=True,test_data = test_data,test_target=test_target)
 
 print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1] ))
 

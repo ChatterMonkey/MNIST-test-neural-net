@@ -61,14 +61,4 @@ def open_test_data(number_of_batches):
                     testing_target[batch][event][0] = 0
         return testing_data,testing_target
 
-# 200000
-loss_function_id = 0
-num_epochs = 5
-learning_rate = 0.5
-num_training_batches = 100
-num_testing_batches = 100
-train_batch_size = 64
-test_batch_size = 64
 
-variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
-open_training_data(3)

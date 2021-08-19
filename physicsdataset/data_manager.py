@@ -4,6 +4,7 @@ from physicsdataset.phy_variables import variables as v
 from physicsdataset.phys_roc_maker import calculate_roc_curve_points
 from physicsdataset.phy_net import Net
 import matplotlib.pyplot as plt
+from physicsdataset.phy_loaders import open_test_data
 import math
 import torch
 
@@ -28,7 +29,7 @@ def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list):
     e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
     print(e('select * from data').fetchall())
 
-def visulize(experiment_id = 1, plot_last = False):
+def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target = None):
     print("visulizing")
 
     cur = connection.cursor()
@@ -46,7 +47,9 @@ def visulize(experiment_id = 1, plot_last = False):
     network_state_dict = torch.load(json.loads(data[1]))
     network.load_state_dict(network_state_dict)
     loss_function_id = data[6]
-    print(loss_function_id)
+
+
+
     loss_function_str = v.loss_function_tuple[data[6]][0]
     learning_rate = data[7]
     num_epochs = data[8]
@@ -126,12 +129,13 @@ def visulize(experiment_id = 1, plot_last = False):
     plt.ylabel("True Positive Rate", fontdict = font1)
 
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+    if (test_data == None) or (test_target == None):
+        test_data, test_target = open_test_data(v.num_testing_batches)
 
 
 
-    tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,2)
-    print(tp)
-    print(fp)
+    tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
+
     plt.plot(tp,fp)
 
     plt.subplot(4,2,7)
@@ -146,4 +150,4 @@ def visulize(experiment_id = 1, plot_last = False):
 
 
     plt.suptitle(str(title),fontdict = font2)
-    plt.savefig('../physics_graphs/test_graph.png')
+    plt.savefig(plot_path)
