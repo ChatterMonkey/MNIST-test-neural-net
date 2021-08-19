@@ -4,6 +4,7 @@ from physicsdataset.phy_variables import variables as v
 from physicsdataset.phys_roc_maker import calculate_roc_curve_points
 from physicsdataset.phy_net import Net
 import matplotlib.pyplot as plt
+from physicsdataset.phy_loaders import open_test_data
 import math
 import torch
 
@@ -18,26 +19,26 @@ def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list):
     network_string = json.dumps(network_path)
 
     trainlj = json.dumps(training_loss)
+
     testlj = json.dumps(testing_loss)
     accj = json.dumps(accuracy)
     tp = json.dumps(tp_list)
     fp = json.dumps(fp_list)
 
-    e('CREATE TABLE IF NOT EXISTS data(id integer primary key autoincrement, network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp)')
-    e('INSERT INTO data VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(None, network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
-    print(e('Select * from data').fetchall())
+    e('CREATE TABLE IF NOT EXISTS data(ID INTEGER PRIMARY KEY AUTOINCREMENT, network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp)')
+    e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
+    print(e('select * from data').fetchall())
 
-
-def visulize(experiment_id = 0, plot_last = False):
+def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target = None):
     print("visulizing")
-    print(experiment_id)
+
     cur = connection.cursor()
     if plot_last:
         data = cur.execute('SELECT * FROM data ORDER BY id DESC LIMIT 1').fetchall()
-        print(data)
+
     else:
         data = cur.execute('SELECT * FROM data WHERE id = ?',(experiment_id,)).fetchall()
-        print(data)
+
     data = data[0]
 
     print("id , train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp")
@@ -45,6 +46,10 @@ def visulize(experiment_id = 0, plot_last = False):
     network = Net()
     network_state_dict = torch.load(json.loads(data[1]))
     network.load_state_dict(network_state_dict)
+    loss_function_id = data[6]
+
+
+
     loss_function_str = v.loss_function_tuple[data[6]][0]
     learning_rate = data[7]
     num_epochs = data[8]
@@ -56,7 +61,6 @@ def visulize(experiment_id = 0, plot_last = False):
     accuracy = json.loads(data[11])
 
     tp = json.loads(data[12])
-    print(tp)
     fp = json.loads(data[13])
 
 
@@ -125,17 +129,14 @@ def visulize(experiment_id = 0, plot_last = False):
     plt.ylabel("True Positive Rate", fontdict = font1)
 
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+    if (test_data == None) or (test_target == None):
+        test_data, test_target = open_test_data(v.num_testing_batches)
 
-    true_positive_rates =[]
-    false_positive_rates  = []
 
-    for cutoff in enumerate(cutoffs):
-        print(cutoff)
-        tp,fp = calculate_roc_curve_points(cutoff,network,loss_function_id,2)
-        true_positive_rates.append(tp)
-        false_positive_rates.append(fp)
 
-    plt.plot(false_positive_rates,true_positive_rates)
+    tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
+
+    plt.plot(tp,fp)
 
     plt.subplot(4,2,7)
 
@@ -149,36 +150,4 @@ def visulize(experiment_id = 0, plot_last = False):
 
 
     plt.suptitle(str(title),fontdict = font2)
-    plt.savefig('../physics_graphs/test_graph.png')
-
-
-
-
-
-loss_function_id = 2
-num_epochs = 2
-learning_rate = 0.001
-
-num_training_batches = 1
-num_testing_batches = 4
-train_batch_size = 2
-test_batch_size = 3
-
-
-
-v.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
-
-training_loss = [1,2,3]
-testing_loss = [5,6,7]
-accuracy = [0,6,7]
-
-tp = [9,6,7]
-fp = [10,3,4]
-
-network_path= "../phy_nets/net1.pth"
-add_data(network_path,training_loss,testing_loss, accuracy,tp,fp)
-
-print(e('SELECT * FROM data WHERE id = 2').fetchall())
-print(e('''SELECT * FROM data ORDER BY id DESC LIMIT 1''').fetchall())
-
-visulize(experiment_id=1)
+    plt.savefig(plot_path)

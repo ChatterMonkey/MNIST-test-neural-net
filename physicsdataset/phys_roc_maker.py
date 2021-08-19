@@ -12,43 +12,32 @@ def load_network(path):
     return network
 
 
-def calculate_roc_curve_points(cutoffs, network,loss_function_id,num_testing_batches):
+def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target):
 
     false_positives = []
     true_positives = []
 
-    test_data_lists,test_target_lists = open_test_data(num_testing_batches)
-    print(test_target_lists)
-    for cutoff in enumerate(cutoffs):
-        for batch in tqdm(range(num_testing_batches), colour ="blue", desc="Generating ROC curve"):
-
-            print(test_data_lists)
-            test_data_batch = test_data_lists[batch]
-            test_target_batch = test_target_lists[batch]
-            print(test_target_batch )
+    data_sizes = list(data.size())
+    num_batches = data_sizes[0]
+    batch_size = data_sizes[1]
 
 
-            target_size = len(test_target_batch)
-            data_size = len(test_data_batch)
+    for cutoff in tqdm(enumerate(cutoffs), colour ="blue", desc="Generating ROC curve"):
+        tp_total = 0
+        fp_total = 0
+
+        for batch in range(num_batches):
 
 
-            target_t = torch.zeros([target_size, 1])
-            data_t = torch.zeros([len(test_data_batch),len(test_data_batch[0])])
+            data_batch = data[batch]
+            target_batch = target[batch]
 
-            for event in range(num_testing_batches):
-                target_t[event][0] = test_target_batch[event]
+            num_correct,loss, tp,fp = test(network,data_batch,target_batch,loss_function_id,True,cutoff[1])
+            tp_total += tp
+            fp_total += fp
 
-            for event in range(len(test_target_batch)):
-                for variable in range(variables.num_variables):
-                    print("test data batch")
-                    print(len(test_data_batch))
-                    print(test_data_batch)
-                    var = abs(float(test_data_batch[event][variable])/variables.normalization_constant)
-                    data_t[event][variable] = var
-            num_correct,loss, tp,fp = test(network,data_t,target_t,loss_function_id,True,cutoff)
-
-            true_positives.append(tp/data_size)
-            false_positives.append(fp/data_size)
+        true_positives.append(tp_total/(batch_size * num_batches))
+        false_positives.append(fp_total/(batch_size* num_batches))
     return true_positives,false_positives
 
 
