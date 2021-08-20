@@ -27,10 +27,10 @@ def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list):
 
     e('CREATE TABLE IF NOT EXISTS data(ID INTEGER PRIMARY KEY AUTOINCREMENT, network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp)')
     e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
-    print(e('select * from data').fetchall())
+    #print(e('select * from data').fetchall())
 
 def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target = None):
-    print("visulizing")
+    #print("visulizing")
 
     cur = connection.cursor()
     if plot_last:
@@ -41,7 +41,7 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
     data = data[0]
 
-    print("id , train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp")
+    #print("id , train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp")
 
     network = Net()
     network_state_dict = torch.load(json.loads(data[1]))
@@ -67,12 +67,11 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
     title = str(num_epochs) + " epochs with "+ loss_function_str + " and lr=" + str(learning_rate)
     subtitle = "nTrainingBatches = " + str(num_training_batches)+ " TrainBatchSize = " + str(train_batch_size)+ " TestBatchSize = "+ str(test_batch_size)+ " nTestingBatches = " + str(num_test_batches)
-    print(title)
-    print(subtitle)
+
 
     train_loss_list = json.loads(data[9])
     test_loss_list = json.loads(data[10])
-    print(test_loss_list)
+
 
 
     significances = []
@@ -136,7 +135,7 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
     tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
 
-    plt.plot(tp,fp)
+    plt.plot(fp,tp)
 
     plt.subplot(4,2,7)
 
@@ -150,4 +149,5 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
 
     plt.suptitle(str(title),fontdict = font2)
-    plt.savefig(plot_path)
+    with open(plot_path,"w") as plot_file:
+        plt.savefig(plot_path)

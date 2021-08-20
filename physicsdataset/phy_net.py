@@ -9,15 +9,15 @@ class Net(nn.Module):
         #batchnorm1d
         self.fc1 = nn.Linear(30,128)
         self.fc2 = nn.Linear(128,1)
-       # self.fc2 = nn.Linear(128,256)
-       # self.fc3 = nn.Linear(256,1)
+        #self.fc2 = nn.Linear(128,256)
+        #self.fc3 = nn.Linear(256,1)
       
 
     def forward(self, x):
       x = self.fc1(x)
       x = F.relu(x)
       x = self.fc2(x)
-      #x = F.relu(x)
+    #  x = F.relu(x)
      # x = self.fc3(x)
       x = torch.sigmoid(x)
       return x
