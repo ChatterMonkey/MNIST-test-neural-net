@@ -6,7 +6,7 @@ import torch
 
 
 
-def open_training_data(number_of_batches):
+def open_training_data(number_of_batches, pickle=True):
 
     if number_of_batches * variables.train_batch_size > 200000:
         print("Warning! requested too much training data, only 200000 records available, {} requested".format(number_of_batches * variables.train_batch_size))
@@ -32,12 +32,20 @@ def open_training_data(number_of_batches):
                     training_target[batch][event][0] = 1
                 else:
                     training_target[batch][event][0] = 0
+    if pickle:
+        print("pickling training data...")
+        data_path = "../loaded_data/train_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+        target_path = "../loaded_data/train_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
 
+        torch.save(training_data,data_path)
+
+        torch.save(training_target,target_path)
         return training_data,training_target
+    return training_data,training_target
 
 
 
-def open_test_data(number_of_batches):
+def open_test_data(number_of_batches, pickle=True):
 
     if number_of_batches * variables.test_batch_size > 50000:
         print("Warning! requested too much testing data, only 50000 records available, {} requested".format(number_of_batches * variables.test_batch_size))
@@ -59,6 +67,14 @@ def open_test_data(number_of_batches):
                     testing_target[batch][event][0] = 1
                 else:
                     testing_target[batch][event][0] = 0
-        return testing_data,testing_target
+    if pickle:
+        print("pickling testing data... \n")
 
+        data_path = "../loaded_data/test_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+        target_path = "../loaded_data/test_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+
+        torch.save(testing_data,data_path)
+        torch.save(testing_target,target_path)
+        return testing_data,testing_target
+    return testing_data,testing_target
 

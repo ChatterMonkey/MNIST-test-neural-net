@@ -9,6 +9,8 @@ def test(network, data, target, loss_function_id,calculating_tp_and_fp = False, 
 
 
     num_correct = 0
+    guessed_signal = 0
+    guessed_bkground = 0
 
     if calculating_tp_and_fp:
         tp = 0
@@ -18,6 +20,7 @@ def test(network, data, target, loss_function_id,calculating_tp_and_fp = False, 
 
 
         if output[event][0].item() > cutoff:
+            guessed_signal += 1
             if target[event][0]  == 1:
                 num_correct += 1
                 if calculating_tp_and_fp:
@@ -26,8 +29,14 @@ def test(network, data, target, loss_function_id,calculating_tp_and_fp = False, 
                 if calculating_tp_and_fp:
                     fp += 1
         else:
+            guessed_bkground += 1
             if target[event][0] ==0:
                 num_correct += 1
+    #print("correct: {}".format(num_correct))
+    #print("bk: {}".format(guessed_bkground))
+    #print("sig: {}".format(guessed_signal))
+    #print("tp: {}".format(tp))
+    #print("fp: {}".format(fp))
 
     if calculating_tp_and_fp:
         return num_correct,loss, tp,fp
