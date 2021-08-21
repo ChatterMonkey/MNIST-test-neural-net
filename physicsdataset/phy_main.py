@@ -13,8 +13,8 @@ from physicsdataset.phy_variables import variables
 
 # 250000
 loss_function_id = 2
-num_epochs = 800
-learning_rate = 0.01
+num_epochs = 1600
+learning_rate = 0.1
 num_training_batches = 3125
 #num_training_batches = 1
 num_testing_batches = 781
@@ -96,7 +96,7 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
     accuracy_each_epoch.append(num_correct_this_epoch/(num_testing_batches*test_batch_size)*100)
 
 
-test_name = "test_10"
+test_name = "test_12"
 network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 
