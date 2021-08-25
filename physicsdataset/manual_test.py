@@ -33,7 +33,7 @@ test_data = torch.load(test_data_path)
 test_target = torch.load(test_target_path)
 
 network = Net()
-network.load_state_dict(torch.load("../phy_nets/test_14.pth"))
+network.load_state_dict(torch.load("../phy_nets/test_14followup2.pth"))
 
 correct = 0
 true_p = 0
@@ -41,13 +41,13 @@ false_p = 0
 
 for batch in range(num_testing_batches):
 
-    batch_train_data = test_data[batch]
+    batch_test_data = test_data[batch]
 
-    batch_train_target = test_target[batch]
+    batch_test_target = test_target[batch]
 
 
 
-    num_correct,loss, tp,fp = test(network,test_data,test_target,2,True,0.5)
+    num_correct,loss, tp,fp = test(network,batch_test_data,batch_test_target,2,True,0.5)
     correct += num_correct
     true_p += tp
     false_p += fp
