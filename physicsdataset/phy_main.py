@@ -12,9 +12,9 @@ from physicsdataset.phy_variables import variables
 
 
 # 250000
-loss_function_id = 2
-num_epochs = 800
-learning_rate = 0.01
+loss_function_id = 1
+num_epochs = 1600
+learning_rate = 0.001
 num_training_batches = 3125
 #num_training_batches = 1
 num_testing_batches = 781
@@ -25,6 +25,8 @@ variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_t
 
 torch.manual_seed(1)
 network = Net()
+network.load_state_dict(torch.load("../phy_nets/test_14.pth"))
+
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
 #check if data exists:
@@ -96,7 +98,7 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
     accuracy_each_epoch.append(num_correct_this_epoch/(num_testing_batches*test_batch_size)*100)
 
 
-test_name = "test_10"
+test_name = "test_14double"
 network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 
