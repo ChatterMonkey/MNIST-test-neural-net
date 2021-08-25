@@ -77,7 +77,7 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
     significances = []
     if loss_function_id == 1:
         for i in range(len(test_loss_list)):
-            significances.append(math.sqrt(-1 * test_loss_list[i][0]))
+            significances.append(math.sqrt(-1 * test_loss_list[i]))
     else:
         print("using seperate sig evaluation")
         for i in range(len(tp)):
