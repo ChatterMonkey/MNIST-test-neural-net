@@ -33,7 +33,7 @@ test_data = torch.load(test_data_path)
 test_target = torch.load(test_target_path)
 
 network = Net()
-network.load_state_dict(torch.load("../phy_nets/test_14followup2.pth"))
+network.load_state_dict(torch.load("../phy_nets/test_16quadruple.pth"))
 
 correct = 0
 true_p = 0

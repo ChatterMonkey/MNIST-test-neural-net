@@ -17,12 +17,28 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target):
     false_positives = []
     true_positives = []
 
+
+
+
+
     data_sizes = list(data.size())
     num_batches = data_sizes[0]
+    #print(num_batches)
     batch_size = data_sizes[1]
+    #print(batch_size)
 
 
-    for cutoff in tqdm(enumerate(cutoffs), colour ="blue", desc="Generating ROC curve"):
+    frac_signal  = torch.sum(target).item()/(num_batches*batch_size)
+    frac_background = 1 - torch.sum(target).item()/(num_batches*batch_size)
+    print(frac_signal)
+    print(frac_background)
+
+
+
+    for cutoff in enumerate(cutoffs):
+        #print("Cut off is {}".format(cutoff))
+        #print(cutoff[1])
+
         tp_total = 0
         fp_total = 0
 
@@ -35,9 +51,11 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target):
             num_correct,loss, tp,fp = test(network,data_batch,target_batch,loss_function_id,True,cutoff[1])
             tp_total += tp
             fp_total += fp
+        #print(tp_total)
+        #print(fp_total)
 
-        true_positives.append(tp_total/(batch_size * num_batches))
-        false_positives.append(fp_total/(batch_size* num_batches))
+        true_positives.append(tp_total/(batch_size * num_batches*frac_signal))
+        false_positives.append(fp_total/(batch_size* num_batches*frac_background))
     return true_positives,false_positives
 
 

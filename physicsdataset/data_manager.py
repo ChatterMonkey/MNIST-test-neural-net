@@ -75,13 +75,9 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
 
     significances = []
-    if loss_function_id == 1:
-        for i in range(len(test_loss_list)):
-            significances.append(math.sqrt(-1 * test_loss_list[i]))
-    else:
-        print("using seperate sig evaluation")
-        for i in range(len(tp)):
-            significances.append(tp[i]/math.sqrt(float(tp[i]) + float(fp[i]) + 0.00000001))
+
+    for i in range(len(tp)):
+        significances.append(tp[i]/math.sqrt(float(tp[i]) + float(fp[i]) + 0.00000001))
 
 
     plt.figure(figsize=(20,20))
@@ -124,10 +120,11 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
     plt.subplot(4,2,6)
     plt.title("ROC curve", fontdict = font1)
+
     plt.xlabel("False Positive Rate", fontdict = font1)
     plt.ylabel("True Positive Rate", fontdict = font1)
 
-    cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+    cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.1]
     if (test_data == None) or (test_target == None):
         test_data, test_target = open_test_data(v.num_testing_batches)
 

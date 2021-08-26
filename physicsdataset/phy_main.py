@@ -10,22 +10,23 @@ import torch.optim as optm
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-
+#sk learn roc_curve y_true, y_score
+#https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html
 # 250000
 loss_function_id = 1
 num_epochs = 1600
-learning_rate = 0.001
-num_training_batches = 3125
+learning_rate = 0.02
+num_training_batches = 20
 #num_training_batches = 1
-num_testing_batches = 781
-train_batch_size = 64
-test_batch_size = 64
+num_testing_batches = 12
+train_batch_size = 10000
+test_batch_size = 4000
 
 variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
 
 torch.manual_seed(1)
 network = Net()
-network.load_state_dict(torch.load("../phy_nets/test_14.pth"))
+#network.load_state_dict(torch.load("../phy_nets/test_18tripleplus.pth"))
 
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
@@ -98,14 +99,14 @@ for epoch in tqdm(range(variables.num_epochs), colour = "green",desc= "Training"
     accuracy_each_epoch.append(num_correct_this_epoch/(num_testing_batches*test_batch_size)*100)
 
 
-test_name = "test_14double"
+test_name = "normal_net0_02"
 network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 
 
 torch.save(network.state_dict(),network_path)
 
-cutoffs= [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+cutoffs= [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.1]
 
 tp,fp = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
 
