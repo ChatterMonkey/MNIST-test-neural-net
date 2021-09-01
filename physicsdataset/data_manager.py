@@ -15,7 +15,7 @@ e = cur.execute
 #e('DROP TABLE data')
 
 
-def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list):
+def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list,num_epochs):
     network_string = json.dumps(network_path)
 
     trainlj = json.dumps(training_loss)
@@ -26,7 +26,7 @@ def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list):
     fp = json.dumps(fp_list)
 
     e('CREATE TABLE IF NOT EXISTS data(ID INTEGER PRIMARY KEY AUTOINCREMENT, network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp)')
-    e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,v.num_epochs, trainlj,testlj,accj,tp,fp))
+    e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,num_epochs, trainlj,testlj,accj,tp,fp))
     #print(e('select * from data').fetchall())
 
 def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target = None):
