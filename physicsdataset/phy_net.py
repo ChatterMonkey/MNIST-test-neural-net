@@ -21,5 +21,5 @@ class Net(nn.Module):
       x = self.fc2(x)
       x = F.relu(x)
       x = self.fc3(x)
-      x = torch.sigmoid(x)
+     # x = torch.sigmoid(x)
       return x
