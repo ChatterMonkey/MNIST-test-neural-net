@@ -14,8 +14,8 @@ from physicsdataset.phy_variables import variables
 #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html
 # 250000
 
-loss_function_id = 1
-num_epochs = 1600
+loss_function_id = 3
+num_epochs =800
 learning_rate = 0.001
 
 num_training_batches = 50
@@ -35,7 +35,7 @@ network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
 network = Net()
-#network.load_state_dict(torch.load("../phy_nets/test_18tripleplus.pth"))
+network.load_state_dict(torch.load("../phy_nets/preisaac.pth"))
 
 optimizer = optm.Adam(network.parameters(),learning_rate)
 

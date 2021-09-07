@@ -17,6 +17,8 @@ def find_loss(output, target, loss_function_id):
         loss = sig_loss(output,target)
     elif loss_function_id == 2:
         loss = f.binary_cross_entropy(output,target)
+    elif loss_function_id == 3:
+        loss = asimov_significance(output,target)
     else:
         print("LOSS FUNCTION ID NOT VAID")
         return "LOSS FUNCTION ID NOT VAID"
@@ -34,3 +36,7 @@ def asimov_significance(output, target):
 
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
+def asimov_loss(output,target):
+
+    significance = asimov_significance(output,target)
+    return 1/significance
