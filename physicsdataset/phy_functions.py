@@ -39,4 +39,4 @@ def asimov_significance(output, target):
 def asimov_loss(output,target):
 
     significance = asimov_significance(output,target)
-    return 1/significance
+    return -significance
