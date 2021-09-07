@@ -16,7 +16,7 @@ from physicsdataset.phy_variables import variables
 
 loss_function_id = 3
 num_epochs =800
-learning_rate = 0.1
+learning_rate = 0.001
 
 num_training_batches = 50
 num_testing_batches = 12

@@ -18,7 +18,9 @@ def find_loss(output, target, loss_function_id):
     elif loss_function_id == 2:
         loss = f.binary_cross_entropy(output,target)
     elif loss_function_id == 3:
-        loss = asimov_significance(output,target)
+
+        loss = asimov_loss(output,target)
+        print("loss is {}".format(loss))
     else:
         print("LOSS FUNCTION ID NOT VAID")
         return "LOSS FUNCTION ID NOT VAID"
@@ -39,4 +41,4 @@ def asimov_significance(output, target):
 def asimov_loss(output,target):
 
     significance = asimov_significance(output,target)
-    return -significance
+    return 1/significance

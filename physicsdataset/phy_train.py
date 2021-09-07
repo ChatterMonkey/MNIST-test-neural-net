@@ -1,6 +1,5 @@
-import torch.nn.functional as f
 from physicsdataset.phy_functions import find_loss
-import torch
+
 
 def train(network, optimizer, data, target, loss_function_id):
     network.train()
