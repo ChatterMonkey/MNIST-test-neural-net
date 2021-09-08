@@ -15,7 +15,7 @@ from physicsdataset.phy_variables import variables
 # 250000
 
 loss_function_id = 3
-num_epochs =800
+num_epochs =1600
 learning_rate = 0.001
 
 num_training_batches = 50
@@ -26,7 +26,7 @@ test_batch_size = 4000
 
 patience = 20
 test_name = input("Test Name:")
-minimums_allowed= 100
+minimums_allowed= 5
 minimums_occured = minimums_allowed
 
 variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
@@ -35,7 +35,7 @@ network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
 network = Net()
-network.load_state_dict(torch.load("../phy_nets/preisaac.pth"))
+#network.load_state_dict(torch.load("../phy_nets/onesignegativetest.pth"))
 
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
