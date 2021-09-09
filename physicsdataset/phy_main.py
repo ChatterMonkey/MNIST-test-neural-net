@@ -14,8 +14,8 @@ from physicsdataset.phy_variables import variables
 #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html
 # 250000
 
-loss_function_id = 1
-num_epochs = 1600
+loss_function_id = 3
+num_epochs =1600
 learning_rate = 0.001
 
 num_training_batches = 50
@@ -26,7 +26,7 @@ test_batch_size = 4000
 
 patience = 20
 test_name = input("Test Name:")
-minimums_allowed= 4
+minimums_allowed= 5
 minimums_occured = minimums_allowed
 
 variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
@@ -35,7 +35,7 @@ network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
 network = Net()
-#network.load_state_dict(torch.load("../phy_nets/test_18tripleplus.pth"))
+#network.load_state_dict(torch.load("../phy_nets/smallerautostop.pth"))
 
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
@@ -95,6 +95,7 @@ for epoch in range(variables.num_epochs):
             batch_train_data = train_data[batch]
             batch_train_target = train_target[batch]
             loss = train(network,optimizer,batch_train_data,batch_train_target,loss_function_id)
+
             training_loss_this_epoch += loss
 
         training_loss_each_epoch.append(training_loss_this_epoch)
@@ -109,11 +110,11 @@ for epoch in range(variables.num_epochs):
             epoch_fp += fp
 
 
+
             testing_loss_this_epoch += loss.item()
             num_correct_this_epoch += num_correct
-        #if patience > 0 or patience == 0:
-            #if loss_reached_local_minimum:
-             #   patience = patience -1
+
+
         if epoch == 0:
             all_time_low_loss = testing_loss_this_epoch
             print("setting up all time low = {}".format(testing_loss_this_epoch))
