@@ -7,7 +7,7 @@ def test(network, data, target, loss_function_id,calculating_tp_and_fp = False, 
     #print(variables.test_batch_size)
     #print(target.size())
 
-    print("SIZE OF ATA IS {}".format(data.shape))
+
 
     output = network(data)
 
