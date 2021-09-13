@@ -26,7 +26,7 @@ class Net(nn.Module):
 #Do I want to track the mean and variance??
     def forward(self, x): #add batch normilization and dropout layers, more layers,more neurons, output plots
 
-        x = self.norm0(x)
+       # x = self.norm0(x)
 
         x = self.fc1(x)
         x = F.relu(x)

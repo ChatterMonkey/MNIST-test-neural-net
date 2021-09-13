@@ -14,14 +14,14 @@ from physicsdataset.phy_variables import variables
 #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html
 # 250000
 
-loss_function_id = 3
+loss_function_id = 2
 num_epochs =1600
 learning_rate = 0.001
 
-num_training_batches = 50
+num_training_batches = 3125
 num_testing_batches = 12
 
-train_batch_size = 4000
+train_batch_size = 64
 test_batch_size = 4000
 
 patience = 20
@@ -41,11 +41,11 @@ optimizer = optm.Adam(network.parameters(),learning_rate)
 
 #check if data exists:
 
-training_data_path = "../loaded_data/train_data_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
-training_target_path = "../loaded_data/train_target_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+training_data_path = "../non_normalized_loaded_data/train_data_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+training_target_path = "../non_normalized_loaded_data/train_target_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
 
-test_data_path = "../loaded_data/test_data_nb_" + str(num_testing_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
-test_target_path = "../loaded_data/test_target_nb_" + str(num_testing_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+test_data_path = "../non_normalized_loaded_data/test_data_nb_" + str(num_testing_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+test_target_path = "../non_normalized_loaded_data/test_target_nb_" + str(num_testing_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
 
 
 
