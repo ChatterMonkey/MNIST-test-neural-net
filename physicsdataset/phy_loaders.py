@@ -34,8 +34,8 @@ def open_training_data(number_of_batches, pickle=True):
                     training_target[batch][event][0] = 0
     if pickle:
         print("pickling training data...")
-        data_path = "../loaded_data/train_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
-        target_path = "../loaded_data/train_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+        data_path = "../non_normalized_loaded_data/train_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+        target_path = "../non_normalized_loaded_data/train_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
 
         torch.save(training_data,data_path)
 
@@ -70,8 +70,8 @@ def open_test_data(number_of_batches, pickle=True):
     if pickle:
         print("pickling testing data... \n")
 
-        data_path = "../loaded_data/test_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
-        target_path = "../loaded_data/test_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+        data_path = "../non_normalized_loaded_data/test_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+        target_path = "../non_normalized_loaded_data/test_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
 
         torch.save(testing_data,data_path)
         torch.save(testing_target,target_path)

@@ -2,7 +2,8 @@ class variable_list:
     def __init__(self):
 
         self.num_variables = 30
-        self.normalization_constant =300
+        #self.normalization_constant =300
+        self.normalization_constant = 1
 
         self.train_batch_size = None
         self.test_batch_size = None
