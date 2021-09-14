@@ -24,7 +24,7 @@ num_testing_batches = 12
 train_batch_size = 64
 test_batch_size = 4000
 
-patience = 20
+
 test_name = input("Test Name:")
 minimums_allowed= 5
 minimums_occured = minimums_allowed
