@@ -10,19 +10,8 @@ import torch.optim as optm
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-# 250000
-loss_function_id = 1
-num_epochs = 1600
-learning_rate = 0.001
-num_training_batches = 3125
-#num_training_batches = 1
-num_testing_batches = 781
-train_batch_size = 64
-test_batch_size = 64
 
-
-variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
-
+variables.set_params(4000,4000,50,12,0,0,1600)
 
 
 
@@ -33,7 +22,7 @@ test_data = torch.load(test_data_path)
 test_target = torch.load(test_target_path)
 
 network = Net()
-network.load_state_dict(torch.load("../new_phy_nets/bce_0.001_256_512.pth"))
+network.load_state_dict(torch.load("../new_phy_nets/bce_0.001_256_512_256.pth"))
 
 correct = 0
 true_p = 0
@@ -48,10 +37,11 @@ for batch in range(12):
 
     num_correct,loss, tp,fp = test(network,batch_test_data,batch_test_target,2,True,0.5)
     correct += num_correct
+    print(correct)
     true_p += tp
     false_p += fp
 print(correct)
-print(num_testing_batches*test_batch_size)
-print(correct/(num_testing_batches*test_batch_size))
+print(12*4000)
+print(correct/(12*4000))
 print(true_p)
 print(false_p)
