@@ -16,7 +16,10 @@ from physicsdataset.phy_variables import variables
 
 loss_function_id = 2
 num_epochs =1600
+
+
 learning_rate = 0.001
+
 
 num_training_batches = 3125
 num_testing_batches = 12
@@ -25,14 +28,19 @@ train_batch_size = 64
 test_batch_size = 4000
 
 
-test_name = input("Test Name:")
+test_note = input("Test Name:")
+
+test_name = variables.loss_function_tuple[loss_function_id][1] + "_" + str(learning_rate) + "_" + test_note
+print(test_name)
+
+
 minimums_allowed= 5
 minimums_occured = minimums_allowed
 
 variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
 
-network_path= "../phy_nets/" + test_name + ".pth"
-plot_path = '../physics_graphs/'+ test_name + ".png"
+network_path= "../new_phy_nets/" + test_name + ".pth"
+plot_path = '../new_phy_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
 network = Net()
 #network.load_state_dict(torch.load("../phy_nets/dropout85.pth"))
