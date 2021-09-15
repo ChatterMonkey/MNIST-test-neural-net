@@ -47,7 +47,7 @@ def plot_output(path):
     else:
         open("../phy_output_plots/" + path + ".png","w")
 
-    net_params = torch.load("../phy_nets/" + path)
+    net_params = torch.load("../new_phy_nets/" + path)
     net = Net()
     net.load_state_dict(net_params)
 
@@ -83,7 +83,7 @@ def plot_output(path):
 
 
 
-plot_output("sigloss_5minima.pth")
+plot_output("ae_0.001_256_512_0.5.pth")
 
 
 

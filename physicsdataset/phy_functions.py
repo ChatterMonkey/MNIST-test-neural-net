@@ -42,23 +42,28 @@ def asimov_significance(output, target):
     signalWeight=variables.expectedSignal/torch.sum(target)
     bkgdWeight = variables.expectedBackground/torch.sum(1-target)
 
-
-
     s = signalWeight*torch.sum(output*target)
-
-
     b = bkgdWeight*torch.sum(output*(1 - target))
     sigB = variables.systematic*b
 
-
-    lnone = ln_one(s,b,sigB)
-    lntwo  = ln_two(s,b,sigB)
+    return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
 
-    asimov = torch.sqrt(2*((s + b)*lnone - (b*b)/(sigB*sigB)*lntwo))
+def discrete_asimov_significance(output, target, cutoff, systematic):
+    print(target)
+    b = 0
+    s = 0
 
 
+    for i in range(len(output)):
+        if target(i) == 0:
+            if output(i) > cutoff:
+                b += 1
+        else:
+            if output(i) > cutoff:
+                s += 1
 
+    sigB = systematic*b
 
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 

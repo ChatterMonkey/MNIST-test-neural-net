@@ -21,10 +21,10 @@ num_epochs =1600
 learning_rate = 0.001
 
 
-num_training_batches = 3125
+num_training_batches = 50
 num_testing_batches = 12
 
-train_batch_size = 64
+train_batch_size = 4000
 test_batch_size = 4000
 
 
@@ -152,6 +152,7 @@ for epoch in range(variables.num_epochs):
                     else:
                         loss_is_minimized = True
                         print("loss is globally minimized")
+                    loss_moving_average = 0
 
 
 
