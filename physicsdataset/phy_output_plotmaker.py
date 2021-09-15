@@ -1,28 +1,37 @@
 import matplotlib.pyplot as plt
 from physicsdataset.phy_net import Net
+from physicsdataset.phy_test import test
+from os.path import exists
 import torch
 
 def sort_outputs(network):
+
+    test_data_path = "../non_normalized_loaded_data/test_data_nb_" + str(12) + "_bs_" + str(4000) + ".pt"
+    test_target_path = "../non_normalized_loaded_data/test_target_nb_" + str(12) + "_bs_" + str(4000) + ".pt"
+
+
+    test_data = torch.load(test_data_path)
+    test_target = torch.load(test_target_path)
+
+
     background_outputs = [] #values of the output neuron when fed background
     signal_outputs = [] #values of the output neuron when fed signal
 
+    for batch in range(12):
+        batch_test_data = test_data[batch]
+        batch_test_target = test_target[batch]
 
-
-    for batch, (data,target) in enumerate(test_loader):
-
-        if not using_full_dataset:
-            data, target = subset_data(data,target,variables.background)
-        target = prepare_target(target)
 
         network.eval()
+        output = network(batch_test_data)
 
-        output = network(data)
+        print(output)
 
 
 
 
-        for i in range(len(target)):
-            if target[i] == 1:
+        for i in range(len(batch_test_target)):
+            if batch_test_target[i] == 1:
 
                 signal_outputs.append(output[i][0].item())
             else:
@@ -32,8 +41,13 @@ def sort_outputs(network):
 
 
 def plot_output(path):
+    if exists("../phy_output_plots/" + path + ".png"):
+        print("PATH ALREADY EXISTS")
+        return
+    else:
+        open("../phy_output_plots/" + path + ".png","w")
 
-    net_params = torch.load(path)
+    net_params = torch.load("../phy_nets/" + path)
     net = Net()
     net.load_state_dict(net_params)
 
@@ -64,10 +78,12 @@ def plot_output(path):
 
     plt.ylabel("log of the number of times the network outputted each value")
     plt.xlabel("output neuron value")
-    plt.title("MSE outputs, 150 0.1 Full")
-    plt.savefig("phy_output_plots/mse_150_full_0_1plot.png")
+    plt.title(path)
+    plt.savefig("../phy_output_plots/" + path + ".png")
 
 
+
+plot_output("sigloss_5minima.pth")
 
 
 
