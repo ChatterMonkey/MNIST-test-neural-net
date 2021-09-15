@@ -15,14 +15,14 @@ class Net(nn.Module):
         self.initialdrop = nn.Dropout(0.8)
         self.secondarydrop = nn.Dropout(0.5)
 
-        self.fc1 = nn.Linear(30,128)
-        self.norm1 = nn.BatchNorm1d(128)
+        self.fc1 = nn.Linear(30,256)
+        self.norm1 = nn.BatchNorm1d(256)
 
-        self.fc2 = nn.Linear(128,256)
-        self.norm2 = nn.BatchNorm1d(256)
+        self.fc2 = nn.Linear(256,512)
+        self.norm2 = nn.BatchNorm1d(512)
 
 
-        self.fc3 = nn.Linear(256,1)
+        self.fc3 = nn.Linear(512,1)
 
         #self.b1d = nn.BatchNorm1d()
 
@@ -34,7 +34,7 @@ class Net(nn.Module):
 
         # x = self.norm0(x)
 
-        x = self.initialdrop(x)
+        #x = self.initialdrop(x)
 
         x = self.fc1(x)
         x = F.relu(x)

@@ -35,7 +35,7 @@ network_path= "../phy_nets/" + test_name + ".pth"
 plot_path = '../physics_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
 network = Net()
-#network.load_state_dict(torch.load("../phy_nets/smallerautostop.pth"))
+#network.load_state_dict(torch.load("../phy_nets/dropout85.pth"))
 
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
