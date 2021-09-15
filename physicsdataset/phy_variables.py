@@ -18,7 +18,7 @@ class variable_list:
 
         self.expectedSignal = 0.34
         self.expectedBackground = 0.657
-        self.systematic = 0.8
+        self.systematic = 0.5
         self.loss_function_tuple = (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"))
 
     def set_params(self,train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs):

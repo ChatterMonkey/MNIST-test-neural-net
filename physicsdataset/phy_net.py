@@ -22,7 +22,12 @@ class Net(nn.Module):
         self.norm2 = nn.BatchNorm1d(512)
 
 
-        self.fc3 = nn.Linear(512,1)
+        self.fc3 = nn.Linear(512,256)
+        self.norm3 = nn.BatchNorm1d(256)
+
+
+
+        self.fc4 = nn.Linear(256,1)
 
         #self.b1d = nn.BatchNorm1d()
 
@@ -46,7 +51,15 @@ class Net(nn.Module):
         x = self.norm2(x)
         x = self.secondarydrop(x)
 
+
+
         x = self.fc3(x)
+        x = F.relu(x)
+        x = self.norm3(x)
+        x = self.secondarydrop(x)
+
+
+        x = self.fc4(x)
         x = torch.sigmoid(x)
 
         return x

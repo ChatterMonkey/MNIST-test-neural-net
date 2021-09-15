@@ -51,14 +51,6 @@ def asimov_significance(output, target):
     sigB = variables.systematic*b
 
 
-    lnone = ln_one(s,b,sigB)
-    lntwo  = ln_two(s,b,sigB)
-
-
-    asimov = torch.sqrt(2*((s + b)*lnone - (b*b)/(sigB*sigB)*lntwo))
-
-
-
 
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 

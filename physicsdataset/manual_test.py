@@ -26,26 +26,25 @@ variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_t
 
 
 
-test_data_path = "../loaded_data/test_data_nb_" + str(num_testing_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
-test_target_path = "../loaded_data/test_target_nb_" + str(num_testing_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+test_data_path = "../non_normalized_loaded_data/test_data_nb_" + str(12) + "_bs_" + str(4000) + ".pt"
+test_target_path = "../non_normalized_loaded_data/test_target_nb_" + str(12) + "_bs_" + str(4000) + ".pt"
 
 test_data = torch.load(test_data_path)
 test_target = torch.load(test_target_path)
 
 network = Net()
-network.load_state_dict(torch.load("../phy_nets/test_16quadruple.pth"))
+network.load_state_dict(torch.load("../new_phy_nets/bce_0.001_256_512.pth"))
 
 correct = 0
 true_p = 0
 false_p = 0
 
-for batch in range(num_testing_batches):
+for batch in range(12):
 
     batch_test_data = test_data[batch]
 
     batch_test_target = test_target[batch]
-
-
+    network.eval()
 
     num_correct,loss, tp,fp = test(network,batch_test_data,batch_test_target,2,True,0.5)
     correct += num_correct
