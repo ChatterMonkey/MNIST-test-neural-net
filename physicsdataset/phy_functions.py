@@ -10,6 +10,13 @@ def sig_loss(output,target):
     b = backgroundWeight*torch.sum(output*(1-target))
     return -(s*s)/(s+b+0.000001)
 
+def sig_invert(output,target):
+    signalWeight = variables.expectedSignal/torch.sum(target)
+    backgroundWeight = variables.expectedBackground/torch.sum(1-target)
+    s = signalWeight*torch.sum(output*target)
+    b = backgroundWeight*torch.sum(output*(1-target))
+    return (s+b)/(s*s+0.000001)
+
 
 def find_loss(output, target, loss_function_id):
     if loss_function_id == 0:
@@ -20,6 +27,8 @@ def find_loss(output, target, loss_function_id):
         loss = f.binary_cross_entropy(output,target)
     elif loss_function_id == 3:
         loss = asimov_loss(output,target)
+    elif loss_function_id == 4:
+        loss = sig_invert(output,target)
 
     else:
         print("LOSS FUNCTION ID NOT VAID")

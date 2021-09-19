@@ -1,5 +1,5 @@
 from physicsdataset.phy_loaders import open_test_data, open_training_data
-from physicsdataset.phy_net import Net
+from physicsdataset.phy_net import Net_256_512_512_256
 from physicsdataset.phy_train import train
 from physicsdataset.phy_test import test
 from physicsdataset.data_manager import add_data,visulize
@@ -21,7 +21,7 @@ test_target_path = "../non_normalized_loaded_data/test_target_nb_" + str(12) + "
 test_data = torch.load(test_data_path)
 test_target = torch.load(test_target_path)
 
-network = Net()
+network = Net_256_512_512_256()
 network.load_state_dict(torch.load("../new_phy_nets/bce_0.001_256_512_256.pth"))
 
 correct = 0

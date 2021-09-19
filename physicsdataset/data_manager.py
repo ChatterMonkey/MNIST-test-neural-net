@@ -2,7 +2,7 @@ import sqlite3 as sq
 import json
 from physicsdataset.phy_variables import variables as v
 from physicsdataset.phys_roc_maker import calculate_roc_curve_points
-from physicsdataset.phy_net import Net
+from physicsdataset.phy_net import Net_256_512_512_256
 import matplotlib.pyplot as plt
 from physicsdataset.phy_loaders import open_test_data
 import math
@@ -43,7 +43,7 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
 
     #print("id , train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp")
 
-    network = Net()
+    network = Net_256_512_512_256()
     network_state_dict = torch.load(json.loads(data[1]))
     network.load_state_dict(network_state_dict)
     loss_function_id = data[6]

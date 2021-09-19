@@ -3,9 +3,9 @@ from torch.nn import functional as F
 from physicsdataset.phy_variables import variables
 import torch
 
-class Net(nn.Module):
+class Net_256_512_512_256(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
+        super(Net_256_512_512_256, self).__init__()
 
 
 

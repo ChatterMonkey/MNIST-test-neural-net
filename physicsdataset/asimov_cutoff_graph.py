@@ -1,6 +1,6 @@
 import torch
 from physicsdataset.phy_functions import asimov_significance, discrete_asimov_significance
-from physicsdataset.phy_net import Net, Net_256_512
+from physicsdataset.phy_net import Net_256_512_512_256, Net_256_512
 import matplotlib.pyplot as plt
 
 
@@ -11,8 +11,8 @@ def compute_plot_asimov_cutoffs(network, systematic_list):
     test_data = torch.load(test_data_path)
     test_target = torch.load(test_target_path)
     cutoff_list = []
-    for i in range(21):
-        cutoff_list.append(i/20)
+    for i in range(41):
+        cutoff_list.append(i/40)
     print(cutoff_list)
     print(systematic_list)
 
