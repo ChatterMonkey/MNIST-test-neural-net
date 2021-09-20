@@ -1,7 +1,8 @@
 from physicsdataset.phy_loaders import open_test_data, open_training_data
-from physicsdataset.phy_net import Net_256_512_512_256
+from physicsdataset.phy_net import Net_256_512_512_256, Net_256_512
 from physicsdataset.phy_train import train
 from physicsdataset.phy_test import test
+from physicsdataset.phy_functions import asimov_from_tp_fp
 from physicsdataset.data_manager import add_data,visulize
 from physicsdataset.phys_roc_maker import calculate_roc_curve_points
 from os.path import exists
@@ -10,16 +11,11 @@ import torch.optim as optm
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-#sk learn roc_curve y_true, y_score
-#https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html
-# 250000
+# 250000 total records
 
-loss_function_id = 4
-num_epochs =1600
-
-
+loss_function_id = 2
+num_epochs = 2
 learning_rate = 0.001
-
 
 num_training_batches = 50
 num_testing_batches = 12
@@ -42,7 +38,7 @@ variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_t
 network_path= "../new_phy_nets/" + test_name + ".pth"
 plot_path = '../new_phy_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
-network = Net_256_512_512_256()
+network = Net_256_512()
 #network.load_state_dict(torch.load("../phy_nets/dropout85.pth"))
 
 optimizer = optm.Adam(network.parameters(),learning_rate)

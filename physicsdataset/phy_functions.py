@@ -46,6 +46,19 @@ def asimov_significance(output, target):
 
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
+def asimov_from_tp_fp(s,b,systematic): #DOES NOT WEIGHT S and B
+    sigB = b * systematic
+
+    sigB = systematic*b
+    lnone = ln_oned(s,b,sigB)
+    lntwo = ln_twod(s,b,sigB)
+    #print(lnone)
+    #print(lntwo)
+
+
+    asimov_loss = math.sqrt(2*((s+b)*lnone - (b*b)/(sigB*sigB+ 0.000001)*lntwo))
+    return asimov_loss
+
 
 def discrete_asimov_significance(output, target, cutoff, systematic):
 
