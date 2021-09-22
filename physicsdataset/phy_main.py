@@ -13,9 +13,10 @@ from physicsdataset.phy_variables import variables
 
 # 250000 total records
 
-loss_function_id = 2
-num_epochs = 2
+loss_function_id = 3
+num_epochs = 1600
 learning_rate = 0.001
+systematic = 0.3
 
 num_training_batches = 50
 num_testing_batches = 12
@@ -25,7 +26,6 @@ test_batch_size = 4000
 
 
 test_note = input("Test Name:")
-
 test_name = variables.loss_function_tuple[loss_function_id][1] + "_" + str(learning_rate) + "_" + test_note
 print(test_name)
 
@@ -33,17 +33,15 @@ print(test_name)
 minimums_allowed= 5
 minimums_occured = minimums_allowed
 
-variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
+variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs,systematic)
 
 network_path= "../new_phy_nets/" + test_name + ".pth"
 plot_path = '../new_phy_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
 network = Net_256_512()
 #network.load_state_dict(torch.load("../phy_nets/dropout85.pth"))
-
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
-#check if data exists:
 
 training_data_path = "../non_normalized_loaded_data/train_data_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
 training_target_path = "../non_normalized_loaded_data/train_target_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
