@@ -1,5 +1,5 @@
 import torch
-from physicsdataset.phy_net import Net
+from physicsdataset.phy_net import Net_256_512_512_256
 from tqdm import tqdm
 from physicsdataset.phy_loaders import open_test_data
 from physicsdataset.phy_variables import variables
@@ -7,7 +7,7 @@ from physicsdataset.phy_test import test
 
 def load_network(path):
     network_state = torch.load(path)
-    network = Net()
+    network = Net_256_512_512_256()
     network.load_state_dict(network_state)
     return network
 

@@ -1,7 +1,8 @@
 from physicsdataset.phy_loaders import open_test_data, open_training_data
-from physicsdataset.phy_net import Net
+from physicsdataset.phy_net import Net_256_512_512_256, Net_256_512
 from physicsdataset.phy_train import train
 from physicsdataset.phy_test import test
+from physicsdataset.phy_functions import asimov_from_tp_fp
 from physicsdataset.data_manager import add_data,visulize
 from physicsdataset.phys_roc_maker import calculate_roc_curve_points
 from os.path import exists
@@ -10,16 +11,12 @@ import torch.optim as optm
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-#sk learn roc_curve y_true, y_score
-#https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html
-# 250000
+# 250000 total records
 
-loss_function_id = 2
-num_epochs =1600
-
-
+loss_function_id = 3
+num_epochs = 1600
 learning_rate = 0.001
-
+systematic = 0.05
 
 num_training_batches = 50
 num_testing_batches = 12
@@ -29,7 +26,6 @@ test_batch_size = 4000
 
 
 test_note = input("Test Name:")
-
 test_name = variables.loss_function_tuple[loss_function_id][1] + "_" + str(learning_rate) + "_" + test_note
 print(test_name)
 
@@ -37,17 +33,15 @@ print(test_name)
 minimums_allowed= 5
 minimums_occured = minimums_allowed
 
-variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs)
+variables.set_params(train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs,systematic)
 
 network_path= "../new_phy_nets/" + test_name + ".pth"
 plot_path = '../new_phy_graphs/'+ test_name + ".png"
 torch.manual_seed(1)
-network = Net()
+network = Net_256_512()
 #network.load_state_dict(torch.load("../phy_nets/dropout85.pth"))
-
 optimizer = optm.Adam(network.parameters(),learning_rate)
 
-#check if data exists:
 
 training_data_path = "../non_normalized_loaded_data/train_data_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
 training_target_path = "../non_normalized_loaded_data/train_target_nb_" + str(num_training_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"

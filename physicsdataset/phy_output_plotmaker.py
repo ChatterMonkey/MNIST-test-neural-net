@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from physicsdataset.phy_net import Net
+from physicsdataset.phy_net import Net_256_512_512_256
 from physicsdataset.phy_test import test
 from os.path import exists
 import torch
@@ -48,7 +48,7 @@ def plot_output(path):
         open("../phy_output_plots/" + path + ".png","w")
 
     net_params = torch.load("../new_phy_nets/" + path)
-    net = Net()
+    net = Net_256_512_512_256()
     net.load_state_dict(net_params)
 
     signal_outputs, background_outputs = sort_outputs(net)

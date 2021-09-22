@@ -10,6 +10,13 @@ def sig_loss(output,target):
     b = backgroundWeight*torch.sum(output*(1-target))
     return -(s*s)/(s+b+0.000001)
 
+def sig_invert(output,target):
+    signalWeight = variables.expectedSignal/torch.sum(target)
+    backgroundWeight = variables.expectedBackground/torch.sum(1-target)
+    s = signalWeight*torch.sum(output*target)
+    b = backgroundWeight*torch.sum(output*(1-target))
+    return (s+b)/(s*s+0.000001)
+
 
 def find_loss(output, target, loss_function_id):
     if loss_function_id == 0:
@@ -20,23 +27,14 @@ def find_loss(output, target, loss_function_id):
         loss = f.binary_cross_entropy(output,target)
     elif loss_function_id == 3:
         loss = asimov_loss(output,target)
+    elif loss_function_id == 4:
+        loss = sig_invert(output,target)
 
     else:
         print("LOSS FUNCTION ID NOT VAID")
         return "LOSS FUNCTION ID NOT VAID"
     return loss
 
-
-
-#def asimov_significance(output, target):
-#    signalWeight=variables.expectedSignal/torch.sum(target)
-#    bkgdWeight = variables.expectedBackground/torch.sum(1-target)
-
-#    s = signalWeight*torch.sum(torch.round(output)*target)
-#    b = bkgdWeight*torch.sum(torch.round(output)*(1 - target))
-#    sigB = variables.systematic*b
-
- #   return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 def asimov_significance(output, target):
 
     signalWeight=variables.expectedSignal/torch.sum(target)
@@ -48,24 +46,44 @@ def asimov_significance(output, target):
 
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
-
-def discrete_asimov_significance(output, target, cutoff, systematic):
-    print(target)
-    b = 0
-    s = 0
-
-
-    for i in range(len(output)):
-        if target(i) == 0:
-            if output(i) > cutoff:
-                b += 1
-        else:
-            if output(i) > cutoff:
-                s += 1
+def asimov_from_tp_fp(s,b,systematic): #DOES NOT WEIGHT S and B
+    sigB = b * systematic
 
     sigB = systematic*b
+    lnone = ln_oned(s,b,sigB)
+    lntwo = ln_twod(s,b,sigB)
+    #print(lnone)
+    #print(lntwo)
 
-    return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
+
+    asimov_loss = math.sqrt(2*((s+b)*lnone - (b*b)/(sigB*sigB+ 0.000001)*lntwo))
+    return asimov_loss
+
+
+def discrete_asimov_significance(output, target, cutoff, systematic):
+
+    b = 0
+    s = 0
+    for i in range(len(output)):
+        if target[i].item() == 0:
+            if (output[i].item() > cutoff) or (output[i].item == cutoff):
+                b += 1
+        else:
+            if (output[i].item() > cutoff) or (output[i].item == cutoff):
+                s += 1
+
+
+    #print("{},{}".format(s,b))
+    sigB = systematic*b
+    lnone = ln_oned(s,b,sigB)
+    lntwo = ln_twod(s,b,sigB)
+    #print(lnone)
+    #print(lntwo)
+
+
+    asimov_loss = math.sqrt(2*((s+b)*lnone - (b*b)/(sigB*sigB+ 0.000001)*lntwo))
+    return asimov_loss
+
 
 def asimov_loss(output, target):
 
@@ -76,7 +94,7 @@ def asimov_loss(output, target):
 
 def ln_one(s,b,sigB):
 
-    ln_one = torch.log(((s + b)*(b + sigB*sigB))/( b*b + (s+b)*sigB*sigB+ 0.000001))
+    ln_one = torch.log(((s + b)*(b + sigB*sigB))/( b*b + (s+b)*sigB*sigB+ 0.000001) + 0.00000001)
 
     return ln_one
 def ln_two(s,b,sigB):
@@ -86,3 +104,12 @@ def ln_two(s,b,sigB):
 
 
 
+def ln_oned(s,b,sigB):
+
+    ln_one = math.log(((s + b)*(b + sigB*sigB) + 0.000001)/( b*b + (s+b)*sigB*sigB+ 0.000001) )
+
+    return ln_one
+def ln_twod(s,b,sigB):
+    ln_two = math.log(1 + (sigB*sigB*s)/(b*(b + sigB*sigB)+ 0.000001))
+
+    return ln_two
