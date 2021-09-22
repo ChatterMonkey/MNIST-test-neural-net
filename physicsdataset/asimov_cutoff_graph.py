@@ -37,7 +37,7 @@ def compute_plot_asimov_cutoffs(network, systematic_list):
 
 
 def visulize_asimov_cutoffs(network_name, systematic_list):
-    network = Net_256_512_512_256()
+    network = Net_256_512()
     network.load_state_dict(torch.load("../new_phy_nets/" + network_name +  ".pth"))
 
 
@@ -54,5 +54,5 @@ def visulize_asimov_cutoffs(network_name, systematic_list):
     plt.savefig("../asimov_evaluation_plots/" + str(network_name)  + ".png")
 
 
-network_name = "isl_0.001_256_512_512_256"
+network_name = "ae_0.001_256_512_0.2"
 visulize_asimov_cutoffs(network_name, [0.1,0.3,0.5])
