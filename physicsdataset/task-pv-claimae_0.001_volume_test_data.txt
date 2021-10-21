@@ -1,0 +1,1 @@
+hello{"accuracy_each_epoch": [47.49583333333333, 47.954166666666666], "training_loss_each_epoch": [-44.24930638074875, -45.61781919002533], "testing_loss_each_epoch": [-10.94347470998764, -10.950986385345459], "tp_overtime": [15921, 15907], "fp_overtime": [24646, 24412]}

@@ -28,16 +28,18 @@ def find_best_asimov_significance(net_name,test_data,test_target):
             target_batch = test_target[batch]
             output = network(data_batch)
 
-            significance = discrete_asimov_significance(output, target_batch, cutoff, 0.5)
+            significance = discrete_asimov_significance(output, target_batch, cutoff, 0.1)
             cutoff_significance += significance
         significance_per_cutoff.append(cutoff_significance)
     max_significance = 0
-    for significance_i in significance_per_cutoff:
+    cutoff = 0
+    for position, significance_i in enumerate(significance_per_cutoff):
         if significance_i > max_significance:
             max_significance = significance_i
-    print("Maximum significance obtained for {} is {}".format(net_name,max_significance))
+            cutoff = cutoffs[position]
+    print("Maximum significance obtained for {} is {} at {}".format(net_name,max_significance,cutoff))
 
-#find_best_asimov_significance("ae_0.001_256_512_0.175",test_data,test_target)
+find_best_asimov_significance("ae_0.001_256_512_1.0",test_data,test_target)
 
 
 def plot_train_significances(test_significance_list,systematic_list):
@@ -53,6 +55,6 @@ def plot_train_significances(test_significance_list,systematic_list):
 
 
 
-systematic_list = [0,0.05,0.075,0.1,0.15,0.175,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
-significance_list = [32.12102513,88.94427347,100.4022109, 103.2337381,102.52489,92.62378958, 90.4569545,78.03975411,81.39058677,67.98789907,74.18249938,77.94990836,77.94990836,78.07055523,78.07055523]
-plot_train_significances(significance_list,systematic_list)
+#systematic_list = [0,0.05,0.075,0.1,0.15,0.175,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+#significance_list = [32.12102513,88.94427347,100.4022109, 103.2337381,102.52489,92.62378958, 90.4569545,78.03975411,81.39058677,67.98789907,74.18249938,77.94990836,77.94990836,78.07055523,78.07055523]
+#plot_train_significances(significance_list,systematic_list)
