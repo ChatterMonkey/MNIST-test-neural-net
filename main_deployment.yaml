@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plf-app-deployment
+  labels:
+    app: plf-tester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plf-tester
+  template:
+    metadata:
+      labels:
+        app: plf-tester
+    spec:
+      containers:
+      - name: plf-container
+        image: mayabasu/plf_images:test11
+        env:
+        - name: lossFunctionId #mse:0 sl:1,bce:2,ae:3,isl:4
+          value: "2"
+        - name: numEpochs
+          value: "1600"
+        - name: learningRate
+          value: "0.001"
+        - name: systematicError
+          value: "0"
+        - name: numTrainingBatches
+          value: "50"
+        - name: numTestingBatches
+          value: "12"
+        - name: trainBatchSize
+          value: "4000"
+        - name: testBatchSize
+          value: "4000"
+        - name: testNote
+          value: "docker_test2"

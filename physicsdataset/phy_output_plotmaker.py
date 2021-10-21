@@ -9,10 +9,8 @@ def sort_outputs(network):
     test_data_path = "../non_normalized_loaded_data/test_data_nb_" + str(12) + "_bs_" + str(4000) + ".pt"
     test_target_path = "../non_normalized_loaded_data/test_target_nb_" + str(12) + "_bs_" + str(4000) + ".pt"
 
-
     test_data = torch.load(test_data_path)
     test_target = torch.load(test_target_path)
-
 
     background_outputs = [] #values of the output neuron when fed background
     signal_outputs = [] #values of the output neuron when fed signal
@@ -21,24 +19,18 @@ def sort_outputs(network):
         batch_test_data = test_data[batch]
         batch_test_target = test_target[batch]
 
-
         network.eval()
         output = network(batch_test_data)
 
         print(output)
-
-
-
 
         for i in range(len(batch_test_target)):
             if batch_test_target[i] == 1:
 
                 signal_outputs.append(output[i][0].item())
             else:
-
                 background_outputs.append(output[i][0].item())
     return(signal_outputs,background_outputs)
-
 
 def plot_output(path):
     if exists("../phy_output_plots/" + path + ".png"):
