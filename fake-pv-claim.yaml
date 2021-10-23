@@ -3,9 +3,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: task-pv-claim
 spec:
+  #storageClassName: rook-cephfs
   storageClassName: manual
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 3Gi
