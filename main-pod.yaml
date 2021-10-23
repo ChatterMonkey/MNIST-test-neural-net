@@ -11,14 +11,14 @@ spec:
         claimName: task-pv-claim
   containers:
     - name: plf-container
-      image: mayabasu/plf_images:test11
+      image: mayabasu/plf_images:test13
       env:
         - name: lossFunctionId #mse:0 sl:1,bce:2,ae:3,isl:4
           value: "2"
         - name: numEpochs
-          value: "1600"
+          value: "100"
         - name: learningRate
-          value: "0.001"
+          value: "0.1"
         - name: systematicError
           value: "0"
         - name: numTrainingBatches
@@ -30,7 +30,7 @@ spec:
         - name: testBatchSize
           value: "4000"
         - name: testNote
-          value: "docker_test2"
+          value: "persistance_test2"
       volumeMounts:
       - mountPath: /app/task-pv-claim
         name: task-pv-storage

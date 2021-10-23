@@ -33,4 +33,6 @@ class variable_list:
         self.systematic = systematic
         self.num_epochs = num_epochs
 
+    def restore_epochs(self, epochs):
+        self.num_epochs = epochs
 variables = variable_list()
