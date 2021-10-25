@@ -15,7 +15,7 @@ def open_training_data(number_of_batches, pickle=True):
     training_data = torch.zeros((number_of_batches,variables.train_batch_size,variables.num_variables)) #variables by number of events in one batch by number of batches
     training_target = torch.zeros((number_of_batches,variables.train_batch_size,1))
 
-    with open("training.csv") as training_data_file:
+    with open("physicsdataset/training.csv") as training_data_file:
         training_data_file.seek(0)
         trainreader = csv.reader(training_data_file)
         next(trainreader)
@@ -34,8 +34,8 @@ def open_training_data(number_of_batches, pickle=True):
                     training_target[batch][event][0] = 0
     if pickle:
         print("pickling training data...")
-        data_path = "../non_normalized_loaded_data/train_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
-        target_path = "../non_normalized_loaded_data/train_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+        data_path = "non_normalized_loaded_data/train_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
+        target_path = "non_normalized_loaded_data/train_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.train_batch_size) + ".pt"
 
         torch.save(training_data,data_path)
 
@@ -53,7 +53,7 @@ def open_test_data(number_of_batches, pickle=True):
     testing_data = torch.zeros((number_of_batches,variables.train_batch_size,variables.num_variables)) #variables by number of events in one batch by number of batches
     testing_target = torch.zeros((number_of_batches,variables.train_batch_size,1))
 
-    with open("training.csv") as testing_data_file:
+    with open("physicsdataset/training.csv") as testing_data_file:
         testreader = csv.reader(testing_data_file)
         for i in range(200001):
             next(testreader)
@@ -70,8 +70,8 @@ def open_test_data(number_of_batches, pickle=True):
     if pickle:
         print("pickling testing data... \n")
 
-        data_path = "../non_normalized_loaded_data/test_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
-        target_path = "../non_normalized_loaded_data/test_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+        data_path = "non_normalized_loaded_data/test_data_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
+        target_path = "non_normalized_loaded_data/test_target_nb_" + str(number_of_batches) + "_bs_" + str(variables.test_batch_size) + ".pt"
 
         torch.save(testing_data,data_path)
         torch.save(testing_target,target_path)
