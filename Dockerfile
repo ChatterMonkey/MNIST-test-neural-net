@@ -23,7 +23,6 @@ COPY mnist /app/mnist
 COPY neuralnets /app/neuralnets
 COPY new_phy_graphs /app/new_phy_graphs
 COPY new_phy_nets /app/new_phy_nets
-COPY new_phy_roc_curves /app/new_phy_roc_curves
 COPY non_normalized_loaded_data /app/non_normalized_loaded_data
 COPY output_plots /app/output_plots
 COPY phy_nets /app/phy_nets
@@ -34,7 +33,7 @@ COPY requirements.txt /app
 COPY phy_main.py /app
 COPY setup.sh /app
 
-#CMD [ "python3", "-u" , "phy_main.py"]
+CMD [ "python3", "-u" , "phy_main.py"]
 
 #CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
 
