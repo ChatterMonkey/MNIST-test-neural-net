@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: plf-pod-10000
+  name: plf-pod-bt-4000-shell-pod
   labels:
     app: plf-tester
 spec:
@@ -11,26 +11,31 @@ spec:
         claimName: task-pv-claim
   containers:
     - name: plf-container
-      image: mayabasu/plf_images:test2
+      image: mayabasu/plf_images:path3test
+      resources:
+        limits:
+          memory: "5Gi"
+        requests:
+          memory: "4Gi"
       env:
         - name: lossFunctionId #mse:0 sl:1,bce:2,ae:3,isl:4
           value: "3"
         - name: numEpochs
-          value: "1600"
+          value: "3200"
         - name: learningRate
-          value: "0.001"
+          value: "0.0001"
         - name: systematicError
           value: "0.5"
         - name: numTrainingBatches
-          value: "20"
+          value: "50"
         - name: numTestingBatches
           value: "12"
         - name: trainBatchSize
-          value: "10000"
+          value: "4000"
         - name: testBatchSize
           value: "4000"
         - name: testNote
-          value: "0.5_10000"
+          value: "0.5_bt_shell-pod"
       volumeMounts:
       - mountPath: /app/task-pv-claim
         name: task-pv-storage

@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: phy-main-config
-data:
-  test-name: config-test

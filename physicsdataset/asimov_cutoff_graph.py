@@ -54,5 +54,5 @@ def visulize_asimov_cutoffs(network_name, systematic_list):
     plt.savefig("../asimov_evaluation_plots/" + str(network_name)  + ".png")
 
 
-network_name = "bce_0.001_256_512"
+network_name = "ae_1e-05_0.5_bt_0_00001_best"
 visulize_asimov_cutoffs(network_name, [0.1,0.3,0.5])
