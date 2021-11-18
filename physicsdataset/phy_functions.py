@@ -3,45 +3,50 @@ from physicsdataset.phy_variables import variables
 import torch.nn.functional as f
 import math
 
-def sig_loss(output,target):
+def sig_loss(output,target,weights):
     signalWeight = variables.expectedSignal/torch.sum(target)
     backgroundWeight = variables.expectedBackground/torch.sum(1-target)
-    s = signalWeight*torch.sum(output*target)
-    b = backgroundWeight*torch.sum(output*(1-target))
+    s = signalWeight*torch.sum(output*target*weights)
+    b = backgroundWeight*torch.sum(output*(1-target)*weights)
     return -(s*s)/(s+b+0.000001)
 
-def sig_invert(output,target):
+def sig_invert(output,target,weights):
     signalWeight = variables.expectedSignal/torch.sum(target)
     backgroundWeight = variables.expectedBackground/torch.sum(1-target)
-    s = signalWeight*torch.sum(output*target)
-    b = backgroundWeight*torch.sum(output*(1-target))
+    s = signalWeight*torch.sum(output*target*weights)
+    b = backgroundWeight*torch.sum(output*(1-target)*weights)
+
     return (s+b)/(s*s+0.000001)
 
 
-def find_loss(output, target, loss_function_id):
+def find_loss(output, target, weights, loss_function_id):
     if loss_function_id == 0:
         loss = f.mse_loss(output, target)
     elif loss_function_id == 1:
-        loss = sig_loss(output,target)
+        loss = sig_loss(output,target,weights)
     elif loss_function_id == 2:
-        loss = f.binary_cross_entropy(output,target)
+        loss_function = torch.nn.BCELoss(weights)
+        loss = loss_function(output,target)
     elif loss_function_id == 3:
-        loss = asimov_loss(output,target)
+        loss = asimov_loss(output,target,weights)
     elif loss_function_id == 4:
-        loss = sig_invert(output,target)
+        loss = sig_invert(output,target, weights)
 
     else:
         print("LOSS FUNCTION ID NOT VAID")
         return "LOSS FUNCTION ID NOT VAID"
     return loss
 
-def asimov_significance(output, target):
+def asimov_significance(output, target, weights):
 
     signalWeight=variables.expectedSignal/torch.sum(target)
     bkgdWeight = variables.expectedBackground/torch.sum(1-target)
 
-    s = signalWeight*torch.sum(output*target)
-    b = bkgdWeight*torch.sum(output*(1 - target))
+    s = signalWeight*torch.sum(output*target*weights)
+    print(output*target)
+    print(weights)
+    print(output*target*weights)
+    b = bkgdWeight*torch.sum(output*(1 - target)*weights)
     sigB = variables.systematic*b
 
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
@@ -60,17 +65,17 @@ def asimov_from_tp_fp(s,b,systematic): #DOES NOT WEIGHT S and B
     return asimov_loss
 
 
-def discrete_asimov_significance(output, target, cutoff, systematic):
+def discrete_asimov_significance(output, target, weights, cutoff, systematic):
 
     b = 0
     s = 0
     for i in range(len(output)):
         if target[i].item() == 0:
             if (output[i].item() > cutoff) or (output[i].item == cutoff):
-                b += 1
+                b += weights[i]
         else:
             if (output[i].item() > cutoff) or (output[i].item == cutoff):
-                s += 1
+                s += weights[i]
 
 
     #print("{},{}".format(s,b))
@@ -85,10 +90,10 @@ def discrete_asimov_significance(output, target, cutoff, systematic):
     return asimov_loss
 
 
-def asimov_loss(output, target):
+def asimov_loss(output, target, weights):
 
 
-    significance = asimov_significance(output,target)
+    significance = asimov_significance(output,target, weights)
     return -significance
 
 

@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from physicsdataset.phy_loaders import open_test_data
 import math
 import torch
+import numpy as np
+
 
 connection = sq.connect("data.sql")
 cur = connection.cursor()
@@ -15,6 +17,11 @@ e = cur.execute
 
 #e('DROP TABLE data')
 
+def split_weights_from_target(target_and_weights):
+    print("Splitting weights and target")
+    print(target_and_weights.size())
+    target, weights = np.split(target_and_weights, 2,axis = 2)
+    return target, weights
 
 def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list,num_epochs):
     network_string = json.dumps(network_path)
@@ -30,7 +37,7 @@ def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list,n
     e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,num_epochs, trainlj,testlj,accj,tp,fp))
     #print(e('select * from data').fetchall())
 
-def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target = None):
+def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target_and_weights = None):
     #print("visulizing")
 
     cur = connection.cursor()
@@ -126,12 +133,12 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
     plt.ylabel("True Positive Rate", fontdict = font1)
 
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.1]
-    if (test_data == None) or (test_target == None):
-        test_data, test_target = open_test_data(v.num_testing_batches)
+    if (test_data == None) or (test_target_and_weights == None):
+        test_data, test_target_and_weights = open_test_data(v.num_testing_batches)
 
+    test_target, test_weights = split_weights_from_target(test_target_and_weights)
 
-
-    tp_roc,fp_roc = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
+    tp_roc,fp_roc = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target, test_weights)
 
     plt.plot(fp_roc,tp_roc)
 
