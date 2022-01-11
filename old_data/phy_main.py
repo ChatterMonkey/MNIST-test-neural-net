@@ -13,8 +13,8 @@ import numpy as np
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-pvc_path = "old_data/mock_task-pv-claim"
-loaded_data_path = "/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/weighted_non-normalized_loaded_data"
+pvc_path = "mock_task-pv-claim"
+loaded_data_path = "/weighted_non-normalized_loaded_data"
 
 # 250000 total records
 #loss_function_id = int(os.environ['lossFunctionId'])

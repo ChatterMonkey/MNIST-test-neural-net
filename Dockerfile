@@ -30,7 +30,7 @@ COPY old_data/phy_output_plots /app/phy_output_plots
 COPY physicsdataset /app/physicsdataset
 COPY significance_tests /app/significance_tests
 COPY requirements.txt /app
-COPY phy_main.py /app
+COPY old_data/phy_main.py /app
 COPY setup.sh /app
 
 CMD [ "python3", "-u" , "phy_main.py"]

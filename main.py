@@ -2,7 +2,7 @@ from physicsdataset.phy_loaders import open_test_data, open_training_data
 from physicsdataset.phy_net import Net_256_512_512_256, Net_256_512
 from physicsdataset.phy_train import train
 from physicsdataset.phy_test import test
-from physicsdataset.data_manager import add_data, visulize
+from physicsdataset.data_manager import add_data, visulize, split_weights_from_target
 from physicsdataset.phys_roc_maker import calculate_roc_curve_points
 from physicsdataset.phy_variables import variables
 from os.path import exists
@@ -11,8 +11,12 @@ import json
 import torch
 import torch.optim as optm
 
+print("Deploying The Sparkle Squid...")
+print("")
 pvc_path = "data_storage" #path to persitant volume
+loaded_data_path = "weighted_non-normalized_loaded_data"
 test_mode = True #used when running locally
+saving_frequency = 3 #how often to save data
 print("testing mode is on: {}".format(test_mode))
 
 # 250000 total records in the data set
@@ -29,7 +33,7 @@ if not test_mode: # load variables from the environment
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
     loss_function_id = 2
-    num_epochs = 100
+    num_epochs = 25
     learning_rate = 0.1
     systematic = 0
     num_training_batches = 50
@@ -63,29 +67,31 @@ if exists(network_path):
 optimizer = optm.Adam(network.parameters(), learning_rate)
 
 
-training_data_path = "non_normalized_loaded_data/train_data_nb_" + str(num_training_batches) + "_bs_" + str(
+training_data_path = loaded_data_path + "/train_data_nb_" + str(num_training_batches) + "_bs_" + str(
     variables.train_batch_size) + ".pt"
-training_target_path = "non_normalized_loaded_data/train_target_nb_" + str(num_training_batches) + "_bs_" + str(
+training_target_path = loaded_data_path +  "/train_target_nb_" + str(num_training_batches) + "_bs_" + str(
     variables.train_batch_size) + ".pt"
-test_data_path = "non_normalized_loaded_data/test_data_nb_" + str(num_testing_batches) + "_bs_" + str(
+test_data_path = loaded_data_path + "/test_data_nb_" + str(num_testing_batches) + "_bs_" + str(
     variables.test_batch_size) + ".pt"
-test_target_path = "non_normalized_loaded_data/test_target_nb_" + str(num_testing_batches) + "_bs_" + str(
+test_target_path = loaded_data_path + "/test_target_nb_" + str(num_testing_batches) + "_bs_" + str(
     variables.test_batch_size) + ".pt"
 
 if exists(training_data_path) and exists(training_target_path):
     print("Using preloaded training data")
     train_data = torch.load(training_data_path)
-    train_target = torch.load(training_target_path)
+    train_target_and_weights = torch.load(training_target_path)
 else:
-    train_data, train_target = open_training_data(num_training_batches)
+    train_data, train_target_and_weights = open_training_data(num_training_batches)
 
 if exists(test_data_path) and exists(test_target_path):
     print("Using preloaded testing data")
     test_data = torch.load(test_data_path)
-    test_target = torch.load(test_target_path)
+    test_target_and_weights = torch.load(test_target_path)
 else:
-    test_data, test_target = open_test_data(num_testing_batches)
+    test_data, test_target_and_weights = open_test_data(num_testing_batches)
 
+train_target, train_weights = split_weights_from_target(train_target_and_weights)
+test_target, test_weights = split_weights_from_target(test_target_and_weights)
 
 if exists(data_path):
     print("Backing up from old data...")
@@ -148,23 +154,27 @@ for epoch in range(variables.num_epochs):
     if not loss_is_minimized:
         running_count_of_epochs_needed_to_train += 1
 
-        num_correct_this_epoch = 0
+        num_correct_this_epoch = 0  # sum across all of the batches in an epoch
         training_loss_this_epoch = 0
         testing_loss_this_epoch = 0
 
         for batch in range(num_training_batches):
             batch_train_data = train_data[batch]
             batch_train_target = train_target[batch]
-     
-            loss = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id)
+            batch_train_weights = train_weights[batch]
+
+            loss = train(network, optimizer, batch_train_data, batch_train_target, batch_train_weights, loss_function_id)
             training_loss_this_epoch += loss
         training_loss_each_epoch.append(training_loss_this_epoch)
         epoch_tp = 0
         epoch_fp = 0
         for batch in range(num_testing_batches):
+
             batch_test_data = test_data[batch]
             batch_test_target = test_target[batch]
-            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, loss_function_id,
+            batch_test_weights = test_weights[batch]
+
+            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_train_weights ,loss_function_id,
                                              calculating_tp_and_fp=True)
             epoch_tp += tp
             epoch_fp += fp
@@ -176,11 +186,11 @@ for epoch in range(variables.num_epochs):
             all_time_low_loss = testing_loss_this_epoch
             print("setting up all time low = {}".format(testing_loss_this_epoch))
         else:
-            if epoch % 20 != 0:
+            if epoch % saving_frequency != 0:
                 # print("intermediate epoch, adding {}".format(testing_loss_this_epoch/19))
                 loss_moving_average += testing_loss_this_epoch / 19
             else:
-                print("multiple of 20!, all time low loss is {} and average is {}, saving".format(all_time_low_loss,
+                print("multiple of {}!, all time low loss is {} and average is {}, saving".format(saving_frequency, all_time_low_loss,
                                                                                                   loss_moving_average))
                 save_data(data_path, accuracy_each_epoch, training_loss_each_epoch, testing_loss_each_epoch,
                           true_positives_over_time, false_positives_over_time)
@@ -221,9 +231,9 @@ for epoch in range(variables.num_epochs):
 print("{} epochs needed".format(running_count_of_epochs_needed_to_train))
 
 cutoffs = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1]
-tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target)
+tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
 add_data(network_path, training_loss_each_epoch, testing_loss_each_epoch, accuracy_each_epoch, true_positives_over_time,
          false_positives_over_time, running_count_of_epochs_needed_to_train)
 print(tp)
-visulize(plot_path, plot_last=True, test_data=test_data, test_target=test_target)
+visulize(plot_path, plot_last=True, test_data=test_data, test_target_and_weights=test_target_and_weights)
 print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
