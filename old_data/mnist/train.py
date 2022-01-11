@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional
-from mnist.functions import significance_loss,prepare_target,modified_significance_loss
+from old_data.mnist.functions import significance_loss,prepare_target,modified_significance_loss
 
 
 def train(network, optimizer, data,target, loss_function_id):

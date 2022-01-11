@@ -1,15 +1,15 @@
 import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
-from mnist.net import Net
-from mnist.mnist_variables import variables
-from mnist.train import train
-from mnist.test import test
-from mnist.loaders import test_loader,train_loader
-from mnist.functions import subset_data
+from old_data.mnist.net import Net
+from old_data.mnist.mnist_variables import variables
+from old_data.mnist.train import train
+from old_data.mnist.test import test
+from old_data.mnist.loaders import test_loader,train_loader
+from old_data.mnist.functions import subset_data
 import math
 import os
-from mnist.rocmaker import calculate_roc_curve_points
+from old_data.mnist.rocmaker import calculate_roc_curve_points
 
 
 using_full_data = True

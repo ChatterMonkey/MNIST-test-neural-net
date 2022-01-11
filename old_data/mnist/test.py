@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional
-from mnist.functions import significance_loss,prepare_target,modified_significance_loss
+from old_data.mnist.functions import significance_loss,prepare_target,modified_significance_loss
 
 def test(network, data,target,loss_function_id,cutoff = -1,give_sample = False, evaluate_loss = True): #set cutoff to -1 for no cutoff, optional variable
     if loss_function_id == -1:

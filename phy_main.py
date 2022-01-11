@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 from physicsdataset.phy_variables import variables
 
-pvc_path = "mock_task-pv-claim"
+pvc_path = "old_data/mock_task-pv-claim"
 loaded_data_path = "/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/weighted_non-normalized_loaded_data"
 
 # 250000 total records
@@ -28,11 +28,11 @@ loaded_data_path = "/Users/mayabasu/PycharmProjects/MNIST-test-neural-net2/weigh
 #train_batch_size = int(os.environ['trainBatchSize'])
 #test_batch_size = int(os.environ['testBatchSize'])
 
-#test_note = os.environ['testNote']
+#test_nickname = os.environ['testNote']
 #mse = 0,sl = 1,bce = 2,ae = 3,isl = 4
 
-loss_function_id = 1
-num_epochs = 100
+loss_function_id = 3
+num_epochs = 500
 learning_rate = 0.001
 systematic = 0
 
@@ -62,7 +62,7 @@ plot_path = "../" + pvc_path + "/" + test_name + ".png"
 data_path = "../" + pvc_path + "/" + test_name  + "_data.json"
 #
 #network_path = pvc_path + "/" + test_name + ".pth"
-#network_path2 = pvc_path + "/" + test_name + "_best" + ".pth"
+#best_network_path = pvc_path + "/" + test_name + "_best" + ".pth"
 #plot_path = pvc_path + "/" + test_name + ".png"
 #data_path =  "/app/" + pvc_path + "/" + test_name + "_data.json"
 #data_path2 =   pvc_path + "/" + test_name + "_data.json"

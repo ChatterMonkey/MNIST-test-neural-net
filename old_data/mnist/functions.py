@@ -1,5 +1,5 @@
 import torch
-from mnist.mnist_variables import variables
+from old_data.mnist.mnist_variables import variables
 
 
 def prepare_target(target):

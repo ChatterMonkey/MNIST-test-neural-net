@@ -1,7 +1,7 @@
 import torch
 import numpy
-from mnist.net import Net
-from mnist.test import test
+from old_data.mnist.net import Net
+from old_data.mnist.test import test
 
 def optimize_seed(numberofseeds):
     ave_deviations_per_seed = []

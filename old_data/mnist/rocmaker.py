@@ -1,11 +1,11 @@
 
 
-from mnist.mnist_variables import variables
-from mnist.functions import subset_data
+from old_data.mnist.mnist_variables import variables
+from old_data.mnist.functions import subset_data
 import torch
-from mnist.test import test
-from mnist.net import Net
-from mnist.loaders import test_loader
+from old_data.mnist.test import test
+from old_data.mnist.net import Net
+from old_data.mnist.loaders import test_loader
 
 def load_network(path):
     network_state = torch.load(path)
