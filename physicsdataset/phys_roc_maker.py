@@ -4,7 +4,7 @@ from tqdm import tqdm
 from physicsdataset.phy_loaders import open_test_data
 from physicsdataset.phy_variables import variables
 from physicsdataset.phy_test import test
-
+import numpy as np
 def load_network(path):
     network_state = torch.load(path)
     network = Net_256_512_512_256()
@@ -12,14 +12,10 @@ def load_network(path):
     return network
 
 
-def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target):
+def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target, weights):
 
     false_positives = []
     true_positives = []
-
-
-
-
 
     data_sizes = list(data.size())
     num_batches = data_sizes[0]
@@ -30,6 +26,7 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target):
 
     frac_signal  = torch.sum(target).item()/(num_batches*batch_size)
     frac_background = 1 - torch.sum(target).item()/(num_batches*batch_size)
+    print("frac signal verses background")
     print(frac_signal)
     print(frac_background)
 
@@ -47,8 +44,9 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target):
 
             data_batch = data[batch]
             target_batch = target[batch]
+            weight_batch = weights[batch]
 
-            num_correct,loss, tp,fp = test(network,data_batch,target_batch,loss_function_id,True,cutoff[1])
+            num_correct,loss, tp,fp = test(network,data_batch,target_batch,weight_batch,loss_function_id,True,cutoff[1])
             tp_total += tp
             fp_total += fp
         #print(tp_total)

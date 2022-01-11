@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: task-pv-claim
+  name: data_storage_claim
 spec:
   storageClassName: rook-cephfs
   #storageClassName: manual
@@ -9,4 +9,4 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1000Gi
+      storage: 10000Gi

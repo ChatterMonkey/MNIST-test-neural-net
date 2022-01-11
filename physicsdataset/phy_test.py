@@ -2,11 +2,11 @@ from physicsdataset.phy_functions import find_loss
 from physicsdataset.phy_variables import variables
 
 
-def test(network, data, target, loss_function_id,calculating_tp_and_fp = False, cutoff = 0.5):
+def test(network, data, target, weights, loss_function_id,calculating_tp_and_fp = False, cutoff = 0.5):
 
     network.eval()
     output = network(data)
-    loss = find_loss(output,target,loss_function_id)
+    loss = find_loss(output,target,weights, loss_function_id)
 
     num_correct = 0
     guessed_signal = 0

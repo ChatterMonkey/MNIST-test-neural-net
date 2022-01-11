@@ -18,19 +18,19 @@ RUN pip3 install -r requirements.txt
 
 COPY asimov_evaluation_plots /app/asimov_evaluation_plots
 COPY loaded_data /app/loaded_data
-COPY loss_graphs /app/loss_graphs
-COPY mnist /app/mnist
+COPY old_data/loss_graphs /app/loss_graphs
+COPY old_data/mnist /app/mnist
 COPY neuralnets /app/neuralnets
 COPY new_phy_graphs /app/new_phy_graphs
 COPY new_phy_nets /app/new_phy_nets
 COPY non_normalized_loaded_data /app/non_normalized_loaded_data
 COPY output_plots /app/output_plots
-COPY phy_nets /app/phy_nets
-COPY phy_output_plots /app/phy_output_plots
+COPY old_data/phy_nets /app/phy_nets
+COPY old_data/phy_output_plots /app/phy_output_plots
 COPY physicsdataset /app/physicsdataset
 COPY significance_tests /app/significance_tests
 COPY requirements.txt /app
-COPY phy_main.py /app
+COPY old_data/phy_main.py /app
 COPY setup.sh /app
 
 CMD [ "python3", "-u" , "phy_main.py"]
