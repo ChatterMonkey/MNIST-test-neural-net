@@ -16,7 +16,7 @@ print("")
 pvc_path = "data_storage" #path to persitant volume
 loaded_data_path = "weighted_non-normalized_loaded_data"
 test_mode = True #used when running locally
-saving_frequency = 3 #how often to save data
+saving_frequency = 20 #how often to save data
 print("testing mode is on: {}".format(test_mode))
 
 # 250000 total records in the data set
@@ -32,15 +32,15 @@ if not test_mode: # load variables from the environment
     test_batch_size = int(os.environ['testBatchSize'])
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
-    loss_function_id = 2
-    num_epochs = 25
-    learning_rate = 0.1
+    loss_function_id = 2 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
+    num_epochs = 10000
+    learning_rate = 0.001
     systematic = 0
     num_training_batches = 50
     num_testing_batches = 12
     train_batch_size = 4000
     test_batch_size = 4000
-    test_nickname = "volume_test2"
+    test_nickname = "weights_test"
 
 variables.set_params(train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
 torch.manual_seed(1)

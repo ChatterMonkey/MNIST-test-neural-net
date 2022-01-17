@@ -48,7 +48,7 @@ def asimov_significance(output, target, weights):
     print(output*target*weights)
     b = bkgdWeight*torch.sum(output*(1 - target)*weights)
     sigB = variables.systematic*b
-
+    #calculation of asimov loss
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
 def asimov_from_tp_fp(s,b,systematic): #DOES NOT WEIGHT S and B
