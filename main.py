@@ -32,15 +32,15 @@ if not test_mode: # load variables from the environment
     test_batch_size = int(os.environ['testBatchSize'])
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
-    loss_function_id = 2 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
-    num_epochs = 10000
+    loss_function_id = 3 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
+    num_epochs = 16000
     learning_rate = 0.001
-    systematic = 0
+    systematic = 0.1
     num_training_batches = 50
     num_testing_batches = 12
     train_batch_size = 4000
     test_batch_size = 4000
-    test_nickname = "weights_test"
+    test_nickname = "weights_test_3"
 
 variables.set_params(train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
 torch.manual_seed(1)
