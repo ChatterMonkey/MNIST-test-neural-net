@@ -118,7 +118,7 @@ print("{} more epochs will be run".format(variables.num_epochs))
 
 running_count_of_epochs_needed_to_train = previous_epochs_completed
 
-print("CHECK THIS PART!!!")
+
 loss_moving_average = 0
 all_time_low_loss = None
 loss_is_minimized = False
@@ -174,7 +174,7 @@ for epoch in range(variables.num_epochs):
             batch_test_target = test_target[batch]
             batch_test_weights = test_weights[batch]
 
-            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_train_weights ,loss_function_id,
+            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_test_weights ,loss_function_id,
                                              calculating_tp_and_fp=True)
             epoch_tp += tp
             epoch_fp += fp
