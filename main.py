@@ -32,10 +32,10 @@ if not test_mode: # load variables from the environment
     test_batch_size = int(os.environ['testBatchSize'])
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
-    loss_function_id = 2 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
+    loss_function_id = 3 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
     num_epochs = 10000
     learning_rate = 0.001
-    systematic = 0
+    systematic = 0.1
     num_training_batches = 50
     num_testing_batches = 12
     train_batch_size = 4000
@@ -118,7 +118,7 @@ print("{} more epochs will be run".format(variables.num_epochs))
 
 running_count_of_epochs_needed_to_train = previous_epochs_completed
 
-print("CHECK THIS PART!!!")
+
 loss_moving_average = 0
 all_time_low_loss = None
 loss_is_minimized = False
@@ -174,7 +174,7 @@ for epoch in range(variables.num_epochs):
             batch_test_target = test_target[batch]
             batch_test_weights = test_weights[batch]
 
-            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_train_weights ,loss_function_id,
+            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_test_weights ,loss_function_id,
                                              calculating_tp_and_fp=True)
             epoch_tp += tp
             epoch_fp += fp
