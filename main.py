@@ -255,3 +255,5 @@ add_data(network_path, training_loss_each_epoch, testing_loss_each_epoch, accura
 print(tp)
 #visulize(plot_path, plot_last=True, test_data=test_data, test_target_and_weights=test_target_and_weights)
 #print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
+
+yappi.get_func_stats().print_all()
