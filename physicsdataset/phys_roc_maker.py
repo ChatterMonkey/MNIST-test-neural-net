@@ -12,7 +12,7 @@ def load_network(path):
     return network
 
 
-def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target, weights):
+def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target, weights = None):
 
     false_positives = []
     true_positives = []
@@ -44,10 +44,16 @@ def calculate_roc_curve_points(cutoffs, network,loss_function_id, data, target, 
 
             data_batch = data[batch]
             target_batch = target[batch]
-            weight_batch = weights[batch]
+            if weights is not None:
+                weight_batch = weights[batch]
+                num_correct, loss, tp, fp = test(network, data_batch, target_batch, loss_function_id, True, cutoff[1],
+                                                 weights=weight_batch)
+            else:
+                num_correct, loss, tp, fp = test(network, data_batch, target_batch, loss_function_id, True, cutoff[1])
 
-            num_correct,loss, tp,fp = test(network,data_batch,target_batch,weight_batch,loss_function_id,True,cutoff[1])
-            tp_total += tp
+
+
+                tp_total += tp
             fp_total += fp
         #print(tp_total)
         #print(fp_total)

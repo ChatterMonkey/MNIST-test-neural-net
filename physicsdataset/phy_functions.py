@@ -21,15 +21,22 @@ def sig_invert(output,target,weights):
 
 def find_loss(output, target, weights, loss_function_id):
     if loss_function_id == 0:
+        print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
         loss = f.mse_loss(output, target)
     elif loss_function_id == 1:
+        print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
         loss = sig_loss(output,target,weights)
     elif loss_function_id == 2:
-        loss_function = torch.nn.BCELoss(weights)
-        loss = loss_function(output,target)
+        if weights is None:
+            loss = torch.nn.functional.binary_cross_entropy(output, target)
+        else:
+            loss_function = torch.nn.BCELoss(weights)
+            loss = loss_function(output,target)
     elif loss_function_id == 3:
+        print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
         loss = asimov_loss(output,target,weights)
     elif loss_function_id == 4:
+        print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
         loss = sig_invert(output,target, weights)
 
     else:

@@ -1,6 +1,8 @@
 class variable_list:
     def __init__(self):
 
+        self.device = None  # "cuda" or "cpu"
+
         self.num_variables = 30
         #self.normalization_constant =300
         self.normalization_constant = 1
@@ -21,7 +23,9 @@ class variable_list:
         self.systematic = None
         self.loss_function_tuple = (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
 
-    def set_params(self,train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs,systematic):
+    def set_params(self,device, train_batch_size,test_batch_size,num_training_batches,num_testing_batches,loss_function_id,learning_rate,num_epochs,systematic):
+        self.device = device
+
         self.train_batch_size = train_batch_size
         self.test_batch_size = test_batch_size
 

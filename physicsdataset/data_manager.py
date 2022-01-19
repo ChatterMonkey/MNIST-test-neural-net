@@ -6,6 +6,7 @@ from physicsdataset.phy_net import Net_256_512_512_256, Net_256_512
 from physicsdataset.phy_functions import asimov_from_tp_fp
 import matplotlib.pyplot as plt
 from physicsdataset.phy_loaders import open_test_data
+
 import math
 import torch
 import numpy as np
@@ -37,7 +38,7 @@ def add_data(network_path, training_loss,testing_loss,accuracy,tp_list,fp_list,n
     e('INSERT INTO data (network, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(network_string,v.train_batch_size,v.test_batch_size,v.num_training_batches,v.num_testing_batches,v.loss_function_id,v.learning_rate,num_epochs, trainlj,testlj,accj,tp,fp))
     #print(e('select * from data').fetchall())
 
-def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target_and_weights = None):
+def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,test_target = None, weights = None):
     #print("visulizing")
 
     cur = connection.cursor()
@@ -52,6 +53,7 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
     #print("id , train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id, learning_rate, num_epochs,training_loss,testing_loss, accuracy,tp,fp")
 
     network = Net_256_512()
+    network = network.to(v.device)
     network_state_dict = torch.load(json.loads(data[1]))
     network.load_state_dict(network_state_dict)
     loss_function_id = data[6]
@@ -133,12 +135,15 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
     plt.ylabel("True Positive Rate", fontdict = font1)
 
     cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.1]
-    if (test_data == None) or (test_target_and_weights == None):
+    if (test_data == None) or (test_target == None):
         test_data, test_target_and_weights = open_test_data(v.num_testing_batches)
 
-    test_target, test_weights = split_weights_from_target(test_target_and_weights)
 
-    tp_roc,fp_roc = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target, test_weights)
+    if weights is None:
+        tp_roc,fp_roc = calculate_roc_curve_points(cutoffs,network,loss_function_id,test_data,test_target)
+    else:
+        tp_roc, fp_roc = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target,
+                                                weights = weights)
 
     plt.plot(fp_roc,tp_roc)
 

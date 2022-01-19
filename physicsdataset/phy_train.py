@@ -1,7 +1,7 @@
 from physicsdataset.phy_functions import find_loss
 
 
-def train(network, optimizer, data, target, weights, loss_function_id):
+def train(network, optimizer, data, target, loss_function_id, weights = None):
     network.train()
     optimizer.zero_grad()
     output = network(data)

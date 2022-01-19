@@ -9,23 +9,28 @@ from os.path import exists
 import os
 import json
 import torch
-import torch.optim as optm
+import torch.optim as optim
 import yappi
 
-yappi.set_clock_type('cpu')
-yappi.start()
 
-device = 'cuda'
-print("Deploying The Sparkle Squid...")
-print("")
-pvc_path = "data_storage" #path to persitant volume
+device = 'cuda'  # set device as 'cuda' for gpu or 'cpu'
+monitor_code = False  # keep track of how long is spent in each function
+test_mode = True  # used when running locally
+saving_frequency = 20  # how often to save data
+loging_frequency = 10  # how often t log epoch number
+pvc_path = "data_storage"  # path to persitent volume
 loaded_data_path = "weighted_non-normalized_loaded_data"
-test_mode = True #used when running locally
-saving_frequency = 20 #how often to save data
+
+if monitor_code:
+    yappi.set_clock_type('cpu')
+    yappi.start()
+
+print("Deploying The Sparkle Squid with {} ...".format(device))
+print("")
 print("testing mode is on: {}".format(test_mode))
 
-# 250000 total records in the data set
 
+# 250000 total records in the data set
 if not test_mode: # load variables from the environment
     loss_function_id = int(os.environ['lossFunctionId'])
     num_epochs = int(os.environ['numEpochs'])
@@ -38,20 +43,25 @@ if not test_mode: # load variables from the environment
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
     loss_function_id = 2 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
-    num_epochs = 20
-    learning_rate = 0.001
+    num_epochs = 100
+    learning_rate = 0.1
     systematic = 0.1
     num_training_batches = 50
     num_testing_batches = 12
     train_batch_size = 4000
     test_batch_size = 4000
-    test_nickname = "weights_==tes====--_3"
+    use_weights = False
+    test_nickname = "test"
 
-variables.set_params(train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
+variables.set_params(device, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
 torch.manual_seed(1)
 
 # create test name
-test_name = variables.loss_function_tuple[loss_function_id][1] + "_" + str(learning_rate) + "_" + test_nickname
+if use_weights:
+    test_name = variables.loss_function_tuple[loss_function_id][1] + "_" + str(learning_rate) + "_" + "weights_" + test_nickname
+else:
+    test_name = variables.loss_function_tuple[loss_function_id][1] + "_" + str(
+        learning_rate) + "_" + "noweights_" + test_nickname
 print("test name: {}".format(test_name))
 
 # how many local minimums are allowed in the loss before training is stopped
@@ -71,7 +81,7 @@ print("there exists a previous network to start from: {}".format(exists(network_
 if exists(network_path):
     print("Initializing with older network")
     network.load_state_dict(torch.load(network_path))
-optimizer = optm.Adam(network.parameters(), learning_rate)
+optimizer = optim.Adam(network.parameters(), learning_rate)
 
 
 training_data_path = loaded_data_path + "/train_data_nb_" + str(num_training_batches) + "_bs_" + str(
@@ -163,7 +173,8 @@ def save_network(network, network_path):
 
 
 for epoch in range(variables.num_epochs):
-    print("epoch {} of {} this restart, so far has taken {} epochs".format(epoch, variables.num_epochs, running_count_of_epochs_needed_to_train))
+    if epoch % 10 == 0:
+        print("epoch {} of {} this restart, so far has taken {} epochs".format(epoch, variables.num_epochs, running_count_of_epochs_needed_to_train))
     if not loss_is_minimized:
         running_count_of_epochs_needed_to_train += 1
 
@@ -174,10 +185,13 @@ for epoch in range(variables.num_epochs):
         for batch in range(num_training_batches):
             batch_train_data = train_data[batch]
             batch_train_target = train_target[batch]
-            batch_train_weights = train_weights[batch]
 
-            loss = train(network, optimizer, batch_train_data, batch_train_target, batch_train_weights, loss_function_id)
-            #loss = 1
+            if use_weights:
+                batch_train_weights = train_weights[batch]
+                loss = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id, weights = batch_train_weights )
+            else:
+                loss = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id)
+
             training_loss_this_epoch += loss
         training_loss_each_epoch.append(training_loss_this_epoch)
         epoch_tp = 0
@@ -186,14 +200,15 @@ for epoch in range(variables.num_epochs):
 
             batch_test_data = test_data[batch]
             batch_test_target = test_target[batch]
-            batch_test_weights = test_weights[batch]
 
-            num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_test_weights ,loss_function_id,
-                                             calculating_tp_and_fp=True)
-#            num_correct = 0
-#            loss = torch.tensor([1], device='cuda')
-#            tp = 1
-#            fp = 0
+            if use_weights:
+                batch_test_weights = test_weights[batch]
+
+                num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target ,loss_function_id,
+                                             calculating_tp_and_fp=True, weights = batch_test_weights)
+            else:
+                num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, loss_function_id,
+                                                 calculating_tp_and_fp=True)
 
             epoch_tp += tp
 
@@ -206,7 +221,7 @@ for epoch in range(variables.num_epochs):
         else:
             if epoch % saving_frequency != 0:
                 # print("intermediate epoch, adding {}".format(testing_loss_this_epoch/19))
-                loss_moving_average += testing_loss_this_epoch / 19
+                loss_moving_average += testing_loss_this_epoch / (saving_frequency - 1)
             else:
                 print("multiple of {}!, all time low loss is {} and average is {}, saving".format(saving_frequency, all_time_low_loss,
                                                                                                   loss_moving_average))
@@ -249,11 +264,16 @@ for epoch in range(variables.num_epochs):
 print("{} epochs needed".format(running_count_of_epochs_needed_to_train))
 
 cutoffs = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1]
-tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
+if use_weights:
+    tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
+else:
+    tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
+
 add_data(network_path, training_loss_each_epoch, testing_loss_each_epoch, accuracy_each_epoch, true_positives_over_time,
          false_positives_over_time, running_count_of_epochs_needed_to_train)
 print(tp)
-#visulize(plot_path, plot_last=True, test_data=test_data, test_target_and_weights=test_target_and_weights)
-#print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
+visulize(plot_path, plot_last=True, test_data=test_data, test_target = test_target, weights=test_weights )
+print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
 
-yappi.get_func_stats().print_all()
+if monitor_code:
+    yappi.get_func_stats().print_all()
