@@ -50,10 +50,11 @@ Send2Trash==1.7.1
 six==1.16.0
 terminado==0.10.1
 testpath==0.5.0
-torch==1.9.0
-torchvision==0.10.0
+torch==1.10.1+cu113
+torchvision==0.11.2+cu113
 tornado==6.1
 traitlets==5.0.5
 typing-extensions==3.10.0.0
 wcwidth==0.2.5
 webencodings==0.5.1
+yappi

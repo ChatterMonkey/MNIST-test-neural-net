@@ -10,7 +10,12 @@ import os
 import json
 import torch
 import torch.optim as optm
+import yappi
 
+yappi.set_clock_type('cpu')
+yappi.start()
+
+device = 'cuda'
 print("Deploying The Sparkle Squid...")
 print("")
 pvc_path = "data_storage" #path to persitant volume
@@ -32,15 +37,15 @@ if not test_mode: # load variables from the environment
     test_batch_size = int(os.environ['testBatchSize'])
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
-    loss_function_id = 3 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
-    num_epochs = 16000
+    loss_function_id = 2 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
+    num_epochs = 20
     learning_rate = 0.001
     systematic = 0.1
     num_training_batches = 50
     num_testing_batches = 12
     train_batch_size = 4000
     test_batch_size = 4000
-    test_nickname = "weights_test_3"
+    test_nickname = "weights_==tes====--_3"
 
 variables.set_params(train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
 torch.manual_seed(1)
@@ -60,6 +65,8 @@ plot_path = pvc_path + "/" + test_name + ".png"
 data_path = pvc_path + "/" + test_name + "_data.json"
 
 network = Net_256_512()
+network = network.to(device)
+
 print("there exists a previous network to start from: {}".format(exists(network_path)))  # check if a network already exists to start from
 if exists(network_path):
     print("Initializing with older network")
@@ -80,8 +87,10 @@ if exists(training_data_path) and exists(training_target_path):
     print("Using preloaded training data")
     train_data = torch.load(training_data_path)
     train_target_and_weights = torch.load(training_target_path)
+
 else:
     train_data, train_target_and_weights = open_training_data(num_training_batches)
+
 
 if exists(test_data_path) and exists(test_target_path):
     print("Using preloaded testing data")
@@ -89,7 +98,11 @@ if exists(test_data_path) and exists(test_target_path):
     test_target_and_weights = torch.load(test_target_path)
 else:
     test_data, test_target_and_weights = open_test_data(num_testing_batches)
-
+train_data = train_data.to(device)
+train_target_and_weights = train_target_and_weights.to(device)
+test_data = test_data.to(device)
+test_target_and_weights = test_target_and_weights.to(device)
+print(train_target_and_weights.device)
 train_target, train_weights = split_weights_from_target(train_target_and_weights)
 test_target, test_weights = split_weights_from_target(test_target_and_weights)
 
@@ -164,6 +177,7 @@ for epoch in range(variables.num_epochs):
             batch_train_weights = train_weights[batch]
 
             loss = train(network, optimizer, batch_train_data, batch_train_target, batch_train_weights, loss_function_id)
+            #loss = 1
             training_loss_this_epoch += loss
         training_loss_each_epoch.append(training_loss_this_epoch)
         epoch_tp = 0
@@ -176,8 +190,12 @@ for epoch in range(variables.num_epochs):
 
             num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, batch_test_weights ,loss_function_id,
                                              calculating_tp_and_fp=True)
+#            num_correct = 0
+#            loss = torch.tensor([1], device='cuda')
+#            tp = 1
+#            fp = 0
+
             epoch_tp += tp
-            epoch_fp += fp
 
             testing_loss_this_epoch += loss.item()
             num_correct_this_epoch += num_correct
@@ -235,5 +253,5 @@ tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_dat
 add_data(network_path, training_loss_each_epoch, testing_loss_each_epoch, accuracy_each_epoch, true_positives_over_time,
          false_positives_over_time, running_count_of_epochs_needed_to_train)
 print(tp)
-visulize(plot_path, plot_last=True, test_data=test_data, test_target_and_weights=test_target_and_weights)
-print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
+#visulize(plot_path, plot_last=True, test_data=test_data, test_target_and_weights=test_target_and_weights)
+#print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
