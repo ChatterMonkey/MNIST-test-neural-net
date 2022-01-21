@@ -42,9 +42,9 @@ if not test_mode: # load variables from the environment
     test_batch_size = int(os.environ['testBatchSize'])
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
-    loss_function_id = 2 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
-    num_epochs = 100
-    learning_rate = 0.1
+    loss_function_id = 3 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
+    num_epochs = 1000
+    learning_rate = 0.001
     systematic = 0.1
     num_training_batches = 50
     num_testing_batches = 12
@@ -54,6 +54,7 @@ else:  # set variables manually for testing
     test_nickname = "test"
 
 variables.set_params(device, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
+print("systematic is {}".format(variables.systematic))
 torch.manual_seed(1)
 
 # create test name
@@ -99,7 +100,7 @@ if exists(training_data_path) and exists(training_target_path):
     train_target_and_weights = torch.load(training_target_path)
 
 else:
-    train_data, train_target_and_weights = open_training_data(num_training_batches)
+    train_data, train_target_and_weights = open_training_data("non_normalized_loaded_data", num_training_batches)
 
 
 if exists(test_data_path) and exists(test_target_path):
@@ -107,7 +108,7 @@ if exists(test_data_path) and exists(test_target_path):
     test_data = torch.load(test_data_path)
     test_target_and_weights = torch.load(test_target_path)
 else:
-    test_data, test_target_and_weights = open_test_data(num_testing_batches)
+    test_data, test_target_and_weights = open_test_data("non_normalized_loaded_data", num_testing_batches)
 train_data = train_data.to(device)
 train_target_and_weights = train_target_and_weights.to(device)
 test_data = test_data.to(device)

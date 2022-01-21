@@ -5,6 +5,7 @@ def train(network, optimizer, data, target, loss_function_id, weights = None):
     network.train()
     optimizer.zero_grad()
     output = network(data)
+    print("OUTPUT IS {}   {}".format(output,data))
     loss = find_loss(output,target, weights, loss_function_id)
     loss.backward()
     optimizer.step()

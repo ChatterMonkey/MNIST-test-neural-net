@@ -42,7 +42,7 @@ class Net_256_512_512_256(nn.Module):
     def forward(self, x): #add batch normilization and dropout layers, more layers,more neurons, output plots
 
         # x = self.norm0(x)
-
+        print("X is {}".format(x))
         #x = self.initialdrop(x)
 
         x = self.fc1(x)
@@ -108,24 +108,32 @@ class Net_256_512(nn.Module):
         # x = self.norm0(x)
 
         #x = self.initialdrop(x)
+        print("x is {}".format(x))
 
         x = self.fc1(x)
+        print("x is {}".format(x))
         x = F.relu(x)
+        print("x is {}".format(x))
         x = self.norm1(x)
+        print("x is {}".format(x))
         x = self.secondarydrop(x)
-
+        print("x is {}".format(x))
         x = self.fc2(x)
+        print("x is {}".format(x))
         x = F.relu(x)
+        print("x is {}".format(x))
         x = self.norm2(x)
+        print("x is {}".format(x))
         x = self.secondarydrop(x)
+        print("x is {}".format(x))
 
 
 
         x = self.fc3(x)
-
+        print("x is {}".format(x))
 
 
         x = torch.sigmoid(x)
-
+        print("x is {}".format(x))
         return x
 

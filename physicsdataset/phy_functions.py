@@ -33,8 +33,12 @@ def find_loss(output, target, weights, loss_function_id):
             loss_function = torch.nn.BCELoss(weights)
             loss = loss_function(output,target)
     elif loss_function_id == 3:
-        print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
-        loss = asimov_loss(output,target,weights)
+        if weights is None:
+            loss = asimov_significance_no_weights(output,target)
+            print(loss)
+        else:
+            loss = asimov_loss(output,target,weights)
+
     elif loss_function_id == 4:
         print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
         loss = sig_invert(output,target, weights)
@@ -50,11 +54,37 @@ def asimov_significance(output, target, weights):
     bkgdWeight = variables.expectedBackground/torch.sum(1-target)
 
     s = signalWeight*torch.sum(output*target*weights)
-    print(output*target)
-    print(weights)
-    print(output*target*weights)
+    #print(output*target)
+    #print(weights)
+    #print(output*target*weights)
     b = bkgdWeight*torch.sum(output*(1 - target)*weights)
     sigB = variables.systematic*b
+    #calculation of asimov loss
+    return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
+
+
+def asimov_significance_no_weights(output, target):
+    print("OUTPUT")
+    print(output)
+    print("TARGET")
+    print(target)
+
+    signalWeight=variables.expectedSignal/torch.sum(target)
+    bkgdWeight = variables.expectedBackground/torch.sum(1-target)
+    print("signal weight, background weight")
+    print(signalWeight)
+    print(bkgdWeight)
+
+    s = signalWeight*torch.sum(output*target)
+    #print(output*target)
+    print(target)
+    print(1 - target)
+    print(output)
+    print(output*(1-target))
+    b = bkgdWeight*torch.sum(output*(1 - target))
+    print("b is {}".format(b))
+    sigB = variables.systematic*b
+    print("sigb is {} systematic is {}".format(sigB,variables.systematic))
     #calculation of asimov loss
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
@@ -101,6 +131,10 @@ def asimov_loss(output, target, weights):
 
 
     significance = asimov_significance(output,target, weights)
+    return -significance
+def asimov_loss_no_weights(output, target):
+
+    significance = asimov_significance_no_weights(output,target)
     return -significance
 
 
