@@ -2,6 +2,7 @@ from torch import nn as nn
 from torch.nn import functional as F
 from physicsdataset.phy_variables import variables
 import torch
+import time
 
 class Net_256_512_512_256(nn.Module):
     def __init__(self):
@@ -87,6 +88,8 @@ class Net_256_512(nn.Module):
         self.secondarydrop = nn.Dropout(0.5)
 
         self.fc1 = nn.Linear(30,256)
+        print("weights ")
+        print(self.fc1.weight)
         self.norm1 = nn.BatchNorm1d(256)
 
         self.fc2 = nn.Linear(256,512)
@@ -104,11 +107,15 @@ class Net_256_512(nn.Module):
 
 #Do I want to track the mean and variance??
     def forward(self, x): #add batch normilization and dropout layers, more layers,more neurons, output plots
-
+        print("trying to forward")
+        print("weights ")
+        print(self.fc1.weight)
         # x = self.norm0(x)
 
         #x = self.initialdrop(x)
         print("x is {}".format(x))
+        print(x.shape)
+        print(self.fc1)
 
         x = self.fc1(x)
         print("x is {}".format(x))
@@ -135,5 +142,6 @@ class Net_256_512(nn.Module):
 
         x = torch.sigmoid(x)
         print("x is {}".format(x))
+        #time.sleep(100)
         return x
 

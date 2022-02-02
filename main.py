@@ -10,8 +10,9 @@ import os
 import json
 import torch
 import torch.optim as optim
+import time
 import yappi
-
+torch.manual_seed(1)
 
 device = 'cuda'  # set device as 'cuda' for gpu or 'cpu'
 monitor_code = False  # keep track of how long is spent in each function
@@ -55,7 +56,7 @@ else:  # set variables manually for testing
 
 variables.set_params(device, train_batch_size, test_batch_size, num_training_batches, num_testing_batches, loss_function_id,learning_rate, num_epochs, systematic)
 print("systematic is {}".format(variables.systematic))
-torch.manual_seed(1)
+
 
 # create test name
 if use_weights:
@@ -116,6 +117,10 @@ test_target_and_weights = test_target_and_weights.to(device)
 print(train_target_and_weights.device)
 train_target, train_weights = split_weights_from_target(train_target_and_weights)
 test_target, test_weights = split_weights_from_target(test_target_and_weights)
+print("number of signal events")
+print(torch.sum(train_target))
+print(train_target.shape)
+
 
 if exists(data_path):
     print("Backing up from old data...")

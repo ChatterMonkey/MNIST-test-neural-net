@@ -2,6 +2,7 @@ import torch
 from physicsdataset.phy_variables import variables
 import torch.nn.functional as f
 import math
+import time
 
 def sig_loss(output,target,weights):
     signalWeight = variables.expectedSignal/torch.sum(target)
@@ -35,9 +36,12 @@ def find_loss(output, target, weights, loss_function_id):
     elif loss_function_id == 3:
         if weights is None:
             loss = asimov_significance_no_weights(output,target)
+            print("LOSS")
             print(loss)
         else:
             loss = asimov_loss(output,target,weights)
+            print("LOSS")
+            print(loss)
 
     elif loss_function_id == 4:
         print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
@@ -64,6 +68,7 @@ def asimov_significance(output, target, weights):
 
 
 def asimov_significance_no_weights(output, target):
+
     print("OUTPUT")
     print(output)
     print("TARGET")
@@ -86,9 +91,14 @@ def asimov_significance_no_weights(output, target):
     sigB = variables.systematic*b
     print("sigb is {} systematic is {}".format(sigB,variables.systematic))
     #calculation of asimov loss
+    #time.sleep(100)
     return torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
 
 def asimov_from_tp_fp(s,b,systematic): #DOES NOT WEIGHT S and B
+    print("info about asimov stuff")
+    print(s)
+    print(b)
+    print(systematic)
     sigB = b * systematic
 
     sigB = systematic*b
