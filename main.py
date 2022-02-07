@@ -18,10 +18,11 @@ device = 'cuda'  # set device as 'cuda' for gpu or 'cpu'
 monitor_code = False  # keep track of how long is spent in each function
 test_mode = True  # used when running locally
 saving_frequency = 20  # how often to save data
-loging_frequency = 10  # how often t log epoch number
+loging_frequency = 10  # how often to log epoch number
 pvc_path = "data_storage"  # path to persitent volume
 loaded_data_path = "weighted_non-normalized_loaded_data"
-
+signal_batch_weight_tracker = []
+background_batch_weight_tracker = []
 if monitor_code:
     yappi.set_clock_type('cpu')
     yappi.start()
@@ -32,7 +33,7 @@ print("testing mode is on: {}".format(test_mode))
 
 
 # 250000 total records in the data set
-if not test_mode: # load variables from the environment
+if not test_mode:  # load variables from the environment
     loss_function_id = int(os.environ['lossFunctionId'])
     num_epochs = int(os.environ['numEpochs'])
     learning_rate = float(os.environ['learningRate'])
@@ -44,7 +45,7 @@ if not test_mode: # load variables from the environment
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
     loss_function_id = 3 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
-    num_epochs = 1000
+    num_epochs = 2
     learning_rate = 0.001
     systematic = 0.1
     num_training_batches = 50
@@ -80,9 +81,9 @@ network = Net_256_512()
 network = network.to(device)
 
 print("there exists a previous network to start from: {}".format(exists(network_path)))  # check if a network already exists to start from
-if exists(network_path):
-    print("Initializing with older network")
-    network.load_state_dict(torch.load(network_path))
+#if exists(network_path):
+#    print("Initializing with older network")
+#    network.load_state_dict(torch.load(network_path))
 optimizer = optim.Adam(network.parameters(), learning_rate)
 
 
@@ -194,9 +195,9 @@ for epoch in range(variables.num_epochs):
 
             if use_weights:
                 batch_train_weights = train_weights[batch]
-                loss = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id, weights = batch_train_weights )
+                loss, signal_batch_weight_tracker,background_batch_weight_tracker = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id,signal_batch_weight_tracker,background_batch_weight_tracker, weights = batch_train_weights )
             else:
-                loss = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id)
+                loss, signal_batch_weight_tracker,background_batch_weight_tracker = train(network, optimizer, batch_train_data, batch_train_target, loss_function_id, signal_batch_weight_tracker,background_batch_weight_tracker)
 
             training_loss_this_epoch += loss
         training_loss_each_epoch.append(training_loss_this_epoch)
@@ -210,10 +211,10 @@ for epoch in range(variables.num_epochs):
             if use_weights:
                 batch_test_weights = test_weights[batch]
 
-                num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target ,loss_function_id,
+                num_correct, loss, tp, fp,  signal_batch_weight_tracker,background_batch_weight_tracker = test(network, batch_test_data, batch_test_target ,loss_function_id, signal_batch_weight_tracker,background_batch_weight_tracker,
                                              calculating_tp_and_fp=True, weights = batch_test_weights)
             else:
-                num_correct, loss, tp, fp = test(network, batch_test_data, batch_test_target, loss_function_id,
+                num_correct, loss, tp, fp, signal_batch_weight_tracker,background_batch_weight_tracker = test(network, batch_test_data, batch_test_target, loss_function_id,signal_batch_weight_tracker,background_batch_weight_tracker,
                                                  calculating_tp_and_fp=True)
 
             epoch_tp += tp
@@ -274,10 +275,12 @@ if use_weights:
     tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
 else:
     tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
-
+print("trackers")
+print(signal_batch_weight_tracker)
+print(background_batch_weight_tracker)
 add_data(network_path, training_loss_each_epoch, testing_loss_each_epoch, accuracy_each_epoch, true_positives_over_time,
          false_positives_over_time, running_count_of_epochs_needed_to_train)
-print(tp)
+#print(tp)
 visulize(plot_path, plot_last=True, test_data=test_data, test_target = test_target, weights=test_weights )
 print("{} correct, {}% accuracy".format(accuracy_each_epoch[-1], accuracy_each_epoch[-1]))
 
