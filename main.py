@@ -45,13 +45,13 @@ if not test_mode:  # load variables from the environment
     test_nickname = os.environ['testNote']
 else:  # set variables manually for testing
     loss_function_id = 3 # (("mean squared error","mse"),("significance loss","sl"),("binery cross entropy","bce"),("asimov estimate","ae"),("inverted significance loss","isl"))
-    num_epochs = 2
-    learning_rate = 0.001
+    num_epochs = 1000
+    learning_rate = 0.0001
     systematic = 0.1
     num_training_batches = 50
-    num_testing_batches = 12
+    num_testing_batches = 1
     train_batch_size = 4000
-    test_batch_size = 4000
+    test_batch_size = 50000
     use_weights = False
     test_nickname = "test"
 
@@ -68,7 +68,7 @@ else:
 print("test name: {}".format(test_name))
 
 # how many local minimums are allowed in the loss before training is stopped
-minimums_allowed = 5
+minimums_allowed = 20
 minimums_remaining = minimums_allowed
 
 
@@ -192,6 +192,14 @@ for epoch in range(variables.num_epochs):
         for batch in range(num_training_batches):
             batch_train_data = train_data[batch]
             batch_train_target = train_target[batch]
+            sum_signal_weights = torch.sum(train_target * train_weights)
+            average_signal_weight = sum_signal_weights / torch.sum(train_target)
+            sum_background_weights = torch.sum((1 - train_target) * train_weights)
+            average_backround_weights = sum_background_weights / torch.sum(train_target)
+            #print("averge weights:")
+            #print("averae signal weight {}".format(average_signal_weight))
+            #print("average bkground eight {}".format(average_backround_weights))
+            #time.sleep(1000)
 
             if use_weights:
                 batch_train_weights = train_weights[batch]
@@ -210,6 +218,8 @@ for epoch in range(variables.num_epochs):
 
             if use_weights:
                 batch_test_weights = test_weights[batch]
+
+
 
                 num_correct, loss, tp, fp,  signal_batch_weight_tracker,background_batch_weight_tracker = test(network, batch_test_data, batch_test_target ,loss_function_id, signal_batch_weight_tracker,background_batch_weight_tracker,
                                              calculating_tp_and_fp=True, weights = batch_test_weights)
@@ -271,6 +281,7 @@ for epoch in range(variables.num_epochs):
 print("{} epochs needed".format(running_count_of_epochs_needed_to_train))
 
 cutoffs = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1]
+print("FIX THIS ")
 if use_weights:
     tp, fp = calculate_roc_curve_points(cutoffs, network, loss_function_id, test_data, test_target, test_weights)
 else:

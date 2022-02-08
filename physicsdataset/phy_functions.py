@@ -5,15 +5,15 @@ import math
 import time
 
 def sig_loss(output,target,weights):
-    signalWeight = variables.expectedSignal/torch.sum(target)
-    backgroundWeight = variables.expectedBackground/torch.sum(1-target)
+    signalWeight = target.shape[0]*variables.expectedSignal/torch.sum(target)
+    backgroundWeight = target.shape[0]*variables.expectedBackground/torch.sum(1-target)
     s = signalWeight*torch.sum(output*target*weights)
     b = backgroundWeight*torch.sum(output*(1-target)*weights)
     return -(s*s)/(s+b+0.000001)
 
 def sig_invert(output,target,weights):
-    signalWeight = variables.expectedSignal/torch.sum(target)
-    backgroundWeight = variables.expectedBackground/torch.sum(1-target)
+    signalWeight = target.shape[0]*variables.expectedSignal/torch.sum(target)
+    backgroundWeight = target.shape[0]*variables.expectedBackground/torch.sum(1-target)
     s = signalWeight*torch.sum(output*target*weights)
     b = backgroundWeight*torch.sum(output*(1-target)*weights)
 
@@ -36,12 +36,10 @@ def find_loss(output, target, weights, loss_function_id, s_weight_tracker,b_weig
     elif loss_function_id == 3:
         if weights is None:
             loss, s_weight_tracker,b_weight_tracker = asimov_loss_no_weights(output,target,s_weight_tracker,b_weight_tracker)
-            print("LOSS")
-            print(loss)
+
         else:
             loss = asimov_loss(output,target,weights)
-            print("LOSS")
-            print(loss)
+
 
     elif loss_function_id == 4:
         print("FIX USE OF WEIGHRS!!!!!!!!!!!!")
@@ -54,8 +52,8 @@ def find_loss(output, target, weights, loss_function_id, s_weight_tracker,b_weig
 
 def asimov_significance(output, target, weights):
 
-    signalWeight=variables.expectedSignal/torch.sum(target)
-    bkgdWeight = variables.expectedBackground/torch.sum(1-target)
+    signalWeight=target.shape[0]*variables.expectedSignal/torch.sum(target)
+    bkgdWeight = target.shape[0]*variables.expectedBackground/torch.sum(1-target)
 
     s = signalWeight*torch.sum(output*target*weights)
     #print(output*target)
@@ -69,17 +67,17 @@ def asimov_significance(output, target, weights):
 
 
 def asimov_significance_no_weights(output, target, s_weight_tracker,b_weight_tracker):
-    print("calculating loss")
+    #print("calculating loss")
 
     #print("OUTPUT")
     #print(output)
     #print("TARGET")
     #print(target)
 
-    signalWeight=variables.expectedSignal/torch.sum(target)
-    bkgdWeight = variables.expectedBackground/torch.sum(1-target)
-    s_weight_tracker.append(signalWeight)
-    b_weight_tracker.append(bkgdWeight)
+    signalWeight = target.shape[0]*variables.expectedSignal/torch.sum(target)
+    bkgdWeight = target.shape[0]*variables.expectedBackground/torch.sum(1-target)
+    s_weight_tracker.append(signalWeight.item())
+    b_weight_tracker.append(bkgdWeight.item())
     #print("signal weight, background weight")
     #print(signalWeight)
     #print(bkgdWeight)
@@ -91,8 +89,8 @@ def asimov_significance_no_weights(output, target, s_weight_tracker,b_weight_tra
     #print(output)
     #print(output*(1-target))
     b = bkgdWeight*torch.sum(output*(1 - target))
-    print("b is {}".format(b))
-    print("s qx is {}".format(s))
+    #print("b is {}".format(b))
+    #print("s qx is {}".format(s))
     if b.isnan().item() == True:
         print("b is nan")
         time.sleep(1000000)
@@ -109,13 +107,13 @@ def asimov_significance_no_weights(output, target, s_weight_tracker,b_weight_tra
 
     #print(torch.sqrt(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.000001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001))))
    #return torch.sqrt( 2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB+0.000001)+0.0001)-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)+0.000001))/(sigB*sigB+0.000001)))
-    print("with out {}".format(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB))-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)))/(sigB*sigB))))
+    #print("with out {}".format(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB))-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)))/(sigB*sigB))))
     #epsilon = 1e-10
     #b = b + epsilon
     #sigB = b + epsilon
     #s = s + epsilon
     #print("after correction {}".format(2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB))-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)))/(sigB*sigB))))
-
+    print( 2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB))-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)))/(sigB*sigB)))
     return torch.sqrt( 0.1 +2*((s+b)*torch.log((s+b)*(b+sigB*sigB)/(b*b+(s+b)*sigB*sigB))-b*b*torch.log(1+sigB*sigB*s/(b*(b+sigB*sigB)))/(sigB*sigB))), s_weight_tracker,b_weight_tracker
 
 def asimov_from_tp_fp(s,b,systematic): #DOES NOT WEIGHT S and B

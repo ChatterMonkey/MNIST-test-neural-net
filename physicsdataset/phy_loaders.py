@@ -3,6 +3,7 @@ from physicsdataset.phy_variables import variables
 from tqdm import tqdm
 import numpy as np
 import torch
+import time
 
 
 
@@ -51,19 +52,23 @@ def open_test_data(path, number_of_batches, pickle=True):
     if number_of_batches * variables.test_batch_size > 50000:
         print("Warning! requested too much testing data, only 50000 records available, {} requested".format(number_of_batches * variables.test_batch_size))
 
-    testing_data = torch.zeros((number_of_batches,variables.train_batch_size,variables.num_variables)) #variables by number of events in one batch by number of batches
-    testing_target = torch.zeros((number_of_batches,variables.train_batch_size,2))
+    testing_data = torch.zeros((number_of_batches,variables.test_batch_size,variables.num_variables)) #variables by number of events in one batch by number of batches
+    testing_target = torch.zeros((number_of_batches,variables.test_batch_size,2))
 
     with open("physicsdataset/training.csv") as testing_data_file:
         testreader = csv.reader(testing_data_file)
-        for i in range(200001):
+        for i in range(200000):
             next(testreader)
 
         for batch in tqdm(range(number_of_batches), colour="black",desc= "Loading Testing Data"):
             for event in range(variables.test_batch_size):
+                #print(variables.test_batch_size)
                 line = next(testreader)
-                for variable in range(1,variables.num_variables+1):
-                    testing_data[batch][event][variable-1] = float(line[variable])/variables.normalization_constant
+                for variable in range(variables.num_variables):
+                    #print(testing_data)
+                    #print(event)
+                    #time.sleep(1000)
+                    testing_data[batch][event][variable] = float(line[variable])/variables.normalization_constant
                 if line[32]=='s':
                     testing_target[batch][event][0] = 1
                 else:
