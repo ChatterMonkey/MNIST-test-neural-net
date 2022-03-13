@@ -159,7 +159,6 @@ def visulize(plot_path,experiment_id = 1, plot_last = False,test_data = None,tes
     plt.plot(asimov_loss_list)
 
 
-
     plt.subplot(4,2,8)
 
     table_data = [
